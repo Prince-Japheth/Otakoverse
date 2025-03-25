@@ -1,36 +1,94 @@
-import React from 'react';
-import { View, Text, StyleSheet, Switch, TouchableOpacity, ScrollView } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Alert } from 'react-native';
 import { useTheme } from '../context/ThemeContext';
+import { Ionicons } from '@expo/vector-icons';
 
 export default function SettingsScreen() {
   const { theme, toggleTheme } = useTheme();
+  const [pushNotifications, setPushNotifications] = useState(true);
+  const [emailNotifications, setEmailNotifications] = useState(false);
+  
+  // Mock subscription data - replace with actual data from your backend
+  const subscriptionEndDate = new Date();
+  subscriptionEndDate.setDate(subscriptionEndDate.getDate() + 30);
 
-  const renderSettingItem = ({ title, description, onPress, type = 'switch', value }) => {
+  const handleLogout = () => {
+    Alert.alert(
+      "Logout",
+      "Are you sure you want to logout?",
+      [
+        {
+          text: "Cancel",
+          style: "cancel"
+        },
+        {
+          text: "Logout",
+          style: "destructive",
+          onPress: () => {
+            // Add your logout logic here
+          }
+        }
+      ]
+    );
+  };
+
+  const renderSettingItem = ({ title, description, onPress, type = 'switch', value, icon }) => {
     return (
       <TouchableOpacity 
-        style={styles.settingItem} 
+        style={[styles.settingItem, { backgroundColor: theme.cardBackground }]} 
         onPress={type === 'button' ? onPress : null}
       >
         <View style={styles.settingContent}>
+          <View style={styles.settingLeft}>
+            {icon && <Ionicons name={icon} size={24} color={theme.text} style={styles.settingIcon} />}
           <View>
             <Text style={[styles.settingTitle, { color: theme.text }]}>{title}</Text>
             {description && <Text style={[styles.settingDescription, { color: theme.textSecondary }]}>{description}</Text>}
+            </View>
           </View>
           {type === 'switch' && (
-            <Switch
-              value={value}
-              onValueChange={onPress}
-              trackColor={{ false: '#767577', true: '#81b0ff' }}
-              thumbColor={value ? '#f5dd4b' : '#f4f3f4'}
-            />
+            <TouchableOpacity
+              style={[
+                styles.customSwitch,
+                { backgroundColor: value ? theme.primary : theme.switchBackground }
+              ]}
+              onPress={onPress}
+            >
+              <View style={[
+                styles.switchThumb,
+                { transform: [{ translateX: value ? 20 : 0 }] }
+              ]} />
+            </TouchableOpacity>
           )}
         </View>
       </TouchableOpacity>
     );
   };
 
+  const formatDate = (date) => {
+    return date.toLocaleDateString('en-US', { 
+      year: 'numeric', 
+      month: 'long', 
+      day: 'numeric' 
+    });
+  };
+
   return (
     <ScrollView style={[styles.container, { backgroundColor: theme.background }]}>
+      <View style={styles.header}>
+        <Text style={[styles.headerTitle, { color: theme.text }]}>Settings</Text>
+      </View>
+
+      <View style={styles.section}>
+        <Text style={[styles.sectionTitle, { color: theme.text }]}>Subscription</Text>
+        {renderSettingItem({
+          title: 'Premium Status',
+          description: `Active until ${formatDate(subscriptionEndDate)}`,
+          type: 'button',
+          icon: 'star'
+        })}
+      </View>
+
       <View style={styles.section}>
         <Text style={[styles.sectionTitle, { color: theme.text }]}>Appearance</Text>
         {renderSettingItem({
@@ -38,7 +96,8 @@ export default function SettingsScreen() {
           description: 'Toggle dark/light theme', 
           onPress: toggleTheme,
           type: 'switch',
-          value: theme === 'dark'
+          value: theme === 'dark',
+          icon: 'moon'
         })}
       </View>
 
@@ -47,39 +106,52 @@ export default function SettingsScreen() {
         {renderSettingItem({
           title: 'Push Notifications',
           description: 'Receive updates about new episodes',
-          onPress: () => {},
+          onPress: () => setPushNotifications(!pushNotifications),
           type: 'switch',
-          value: true
+          value: pushNotifications,
+          icon: 'notifications'
         })}
         {renderSettingItem({
           title: 'Email Notifications',
           description: 'Receive updates via email',
-          onPress: () => {},
+          onPress: () => setEmailNotifications(!emailNotifications),
           type: 'switch',
-          value: false
+          value: emailNotifications,
+          icon: 'mail'
         })}
       </View>
 
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>About</Text>
+        <Text style={[styles.sectionTitle, { color: theme.text }]}>About</Text>
         {renderSettingItem({
           title: 'Version',
           description: '1.0.0',
-          type: 'button'
+          type: 'button',
+          icon: 'information-circle'
         })}
         {renderSettingItem({
           title: 'Terms of Service',
           description: 'Read our terms and conditions',
           onPress: () => {},
-          type: 'button'
+          type: 'button',
+          icon: 'document-text'
         })}
         {renderSettingItem({
           title: 'Privacy Policy',
           description: 'Learn about our privacy practices',
           onPress: () => {},
-          type: 'button'
+          type: 'button',
+          icon: 'shield-checkmark'
         })}
       </View>
+
+      <TouchableOpacity 
+        style={[styles.logoutButton, { backgroundColor: theme.error }]}
+        onPress={handleLogout}
+      >
+        <Ionicons name="log-out" size={24} color="#fff" />
+        <Text style={styles.logoutText}>Logout</Text>
+      </TouchableOpacity>
     </ScrollView>
   );
 }
@@ -88,8 +160,17 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#000',
-    paddingBottom: 100,
-    paddingTop: 50
+  },
+  header: {
+    padding: 20,
+    paddingTop: 60,
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(255,255,255,0.1)',
+  },
+  headerTitle: {
+    fontSize: 28,
+    fontWeight: 'bold',
+    color: '#fff',
   },
   section: {
     padding: 20,
@@ -105,20 +186,58 @@ const styles = StyleSheet.create({
     letterSpacing: 1,
   },
   settingItem: {
-    paddingVertical: 12,
+    padding: 16,
+    borderRadius: 12,
+    marginBottom: 12,
+    backgroundColor: 'rgba(255,255,255,0.05)',
   },
   settingContent: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
   },
+  settingLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  settingIcon: {
+    marginRight: 12,
+  },
   settingTitle: {
     fontSize: 16,
     color: '#fff',
     marginBottom: 4,
+    fontWeight: '500',
   },
   settingDescription: {
     fontSize: 14,
     color: 'rgba(255,255,255,0.6)',
+  },
+  customSwitch: {
+    width: 44,
+    height: 24,
+    borderRadius: 12,
+    padding: 2,
+  },
+  switchThumb: {
+    width: 20,
+    height: 20,
+    borderRadius: 10,
+    backgroundColor: '#fff',
+  },
+  logoutButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    margin: 20,
+    padding: 16,
+    borderRadius: 12,
+    backgroundColor: '#ff4444',
+  },
+  logoutText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '600',
+    marginLeft: 8,
   },
 }); 

@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@expo/vector-icons": "^14.0.4",
+    "@gorhom/bottom-sheet": "^5.1.2",
     "@react-native-async-storage/async-storage": "^2.1.2",
     "@react-native-community/blur": "^4.4.1",
     "@react-native-community/masked-view": "^0.1.11",
@@ -25,7 +26,6 @@
     "expo-crypto": "^14.0.2",
     "expo-linear-gradient": "^14.0.2",
     "expo-status-bar": "~2.0.1",
-    "expo-video": "^2.0.6",
     "iconsax-react-native": "^0.0.8",
     "lottie-react-native": "^7.2.2",
     "react": "18.3.1",

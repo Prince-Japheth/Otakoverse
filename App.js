@@ -1,9 +1,14 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { SafeAreaView, StatusBar } from 'react-native';
 import { ThemeProvider } from './context/ThemeContext';
 import AppNavigator from './navigation/AppNavigator';
+import { preloadAssets } from './utils/preloadAssets';
 
 export default function App() {
+  useEffect(() => {
+    preloadAssets();
+  }, []);
+
   return (
     <ThemeProvider>
       <StatusBar

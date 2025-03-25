@@ -17,6 +17,7 @@ import { useTheme } from '../context/ThemeContext';
 import { Ionicons } from '@expo/vector-icons';
 import { BlurView } from 'expo-blur';
 import Carousel from 'react-native-snap-carousel';
+import Header from '../components/Header';
 
 const { width } = Dimensions.get('window');
 
@@ -44,64 +45,6 @@ export default function HomeScreen({ navigation }) {
       image: 'https://static1.moviewebimages.com/wordpress/wp-content/uploads/sharedimages/2024/06/death-note-2006.jpg?q=49&fit=crop&w=480&dpr=2'
     },
   ];
-
-  const renderHeader = () => (
-    <View style={styles.header}>
-      <BlurView intensity={0.5}
-        experimentalBlurMethod="blur"
-        tint={isDarkMode ? 'dark' : 'light'}
-        style={[styles.headerBackground, { backgroundColor: theme.headerBackground }]}
-      >
-        <View style={styles.headerContent}>
-          <View style={styles.userInfo}>
-            <Image
-              source={{ uri: 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEASABIAAD/4gKgSUNDX1BST0ZJTEUAAQEAAAKQbGNtcwQwAABtbnRyUkdCIFhZWiAH3wAHABsADQAYADFhY3NwQVBQTAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA9tYAAQAAAADTLWxjbXMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAtkZXNjAAABCAAAADhjcHJ0AAABQAAAAE53dHB0AAABkAAAABRjaGFkAAABpAAAACxyWFlaAAAB0AAAABRiWFlaAAAB5AAAABRnWFlaAAAB+AAAABRyVFJDAAACDAAAACBnVFJDAAACLAAAACBiVFJDAAACTAAAACBjaHJtAAACbAAAACRtbHVjAAAAAAAAAAEAAAAMZW5VUwAAABwAAAAcAHMAUgBHAEIAIABiAHUAaQBsAHQALQBpAG4AAG1sdWMAAAAAAAAAAQAAAAxlblVTAAAAMgAAABwATgBvACAAYwBvAHAAeQByAGkAZwBoAHQALAAgAHUAcwBlACAAZgByAGUAZQBsAHkAAAAAWFlaIAAAAAAAAPbWAAEAAAAA0y1zZjMyAAAAAAABDEoAAAXj///zKgAAB5sAAP2H///7ov///aMAAAPYAADAlFhZWiAAAAAAAABvoAAAOPUAAAOQWFlaIAAAAAAAACSdAAAPgwAAtr9YWVogAAAAAAAAYqUAALeQAAAY3nBhcmEAAAAAAAMAAAACZmYAAPKnAAANWQAAE9AAAApbcGFyYQAAAAAAAwAAAAJmZgAA8qcAAA1ZAAAT0AAACltwYXJhAAAAAAADAAAAAmZmAADypwAADVkAABPQAAAKW2Nocm0AAAAAAAMAAAAAo9cAAFR7AABMzQAAmZoAACZmAAAPXA==' }}
-              style={styles.profilePic}
-            />
-            <View style={styles.greeting}>
-              <Text style={[styles.greetingText, { color: theme.greetingText }]}>Hello,</Text>
-              <Text style={[styles.userName, { color: theme.userName }]}>Timur K.</Text>
-            </View>
-          </View>
-          
-          <TouchableOpacity style={{ overflow: 'hidden', borderRadius: 7 }}>
-            <BlurView
-              intensity={20}
-              tint={isDarkMode ? 'dark' : 'light'}
-              experimentalBlurMethod={isDarkMode ? "blur" : undefined}
-              style={[styles.headerIcon, { backgroundColor: theme.headerIcon }]}
-            >
-              <Ionicons name="notifications-outline" size={22} color={theme.text} />
-            </BlurView>
-            </TouchableOpacity>
-        </View>
-      </BlurView>
-    </View>
-  );
-
-  const renderCategoryTabs = () => (
-    <View style={styles.categoryTabsContainer}>
-      {['Movies', 'TV Shows', 'Anime', 'My List'].map((category, index) => {
-        const isSelected = index === 2; // Anime selected
-        return (
-          <TouchableOpacity
-            key={category}
-            style={[
-              styles.categoryTab,
-              isSelected && { borderBottomColor: theme.selectedIndicator }
-            ]}
-          >
-            <Text style={[
-              styles.categoryTabText,
-              { color: theme.categoryTabText },
-              isSelected && { color: theme.selectedCategoryTabText }
-            ]}>{category}</Text>
-            {isSelected && <View style={[styles.selectedIndicator, { backgroundColor: theme.selectedIndicator }]} />}
-          </TouchableOpacity>
-        );
-      })}
-    </View>
-  );
 
   const renderFeaturedItem = ({ item, index }) => {
     index = index - 3;
@@ -179,30 +122,6 @@ export default function HomeScreen({ navigation }) {
         >
           <Text style={[styles.episodeTitle, { color: theme.episodeTitle }]}>{item.title}</Text>
         </Animated.View>
-        {/* {isActive && (
-          <Animated.View
-            style={[
-              styles.episodeInfoContainer,
-              {
-                opacity: cornerAnimation.interpolate({
-                  inputRange: [0, 1],
-                  outputRange: [0.8, 1]
-                }),
-                transform: [
-                  {
-                    translateY: cornerAnimation.interpolate({
-                      inputRange: [0, 1],
-                      outputRange: [0, -2]
-                    })
-                  }
-                ]
-              }
-            ]}
-          >
-            <Text style={[styles.episodeNumber, { color: theme.episodeNumber }]}>Episode </Text>
-            <Text style={[styles.episodeTitle, { color: theme.episodeTitle }]}>{item.title}</Text>
-          </Animated.View>
-        )} */}
       </View>
     );
   };
@@ -349,7 +268,7 @@ export default function HomeScreen({ navigation }) {
     <View style={styles.sectionContainer}>
       <View style={styles.sectionHeader}>
         <Text style={[styles.sectionTitle, { color: theme.sectionTitle }]}>My Favorites</Text>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={() => navigation.navigate('Favourites')}>
           <Text style={[styles.seeAllText, { color: theme.seeAllText }]}>See all</Text>
         </TouchableOpacity>
       </View>
@@ -482,7 +401,7 @@ export default function HomeScreen({ navigation }) {
         style={styles.statusBarGradient}
         pointerEvents="none"
       />
-      {renderHeader()}
+      <Header title="Hello," subtitle="Timur K." />
       <Animated.ScrollView
         style={styles.scrollView}
         showsVerticalScrollIndicator={false}
@@ -493,7 +412,6 @@ export default function HomeScreen({ navigation }) {
         scrollEventThrottle={16}
       >
         <SafeAreaView style={styles.content}>
-          {/* {renderCategoryTabs()} */}
           {renderFeaturedContent()}
           {renderRecentWatched()}
           {renderMyFavorites()}

@@ -1,6 +1,6 @@
 "use client"
 
-import { useRef } from "react"
+import { useRef, useState } from "react"
 import {
   StyleSheet,
   View,
@@ -16,6 +16,7 @@ import { LinearGradient } from "expo-linear-gradient"
 import { BlurView } from "expo-blur"
 import { Ionicons } from "@expo/vector-icons"
 import { useTheme } from "../context/ThemeContext"
+import BackButton from "../components/BackButton"
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get("window")
 const HEADER_HEIGHT = screenHeight * 0.65
@@ -27,12 +28,13 @@ export default function AnimeDetails({ route, navigation }) {
 
   // Create animated scroll value
   const scrollY = useRef(new Animated.Value(0)).current
+  const [gridStyle, setGridStyle] = useState('list') // 'list' or 'grid'
 
   // Calculate header image transforms based on scroll position
   const headerImageScale = scrollY.interpolate({
-    inputRange: [-200, 0],  // Increased range for more pull-down space
-    outputRange: [3, 1],    // More dramatic zoom (3x)
-    extrapolate: 'clamp',
+    inputRange: [-200, 0, 200, 400, 600],
+    outputRange: [1.2, 1, 1.5, 2, 2.5],
+    extrapolate: 'extend',
   })
 
   const headerImageTranslateY = scrollY.interpolate({
@@ -46,6 +48,88 @@ export default function AnimeDetails({ route, navigation }) {
     outputRange: [-25, 0],
     extrapolate: 'clamp',
   })
+
+  const renderSeasonsSection = () => (
+    <View style={styles.seasonsSection}>
+      <View style={styles.seasonsHeader}>
+        <Text style={[styles.sectionTitle, { color: theme.text }]}>Seasons</Text>
+        <TouchableOpacity
+          onPress={() => setGridStyle(gridStyle === 'list' ? 'grid' : 'list')}
+          style={styles.gridToggleButton}
+        >
+          <Ionicons
+            name={gridStyle === 'list' ? 'list' : 'grid'}
+            size={23}
+            color={theme.text}
+          />
+        </TouchableOpacity>
+      </View>
+      <View style={[
+        styles.seasonsContainer,
+        gridStyle === 'grid' && styles.seasonsGrid
+      ]}>
+        {[
+          {
+            number: 1,
+            title: "Welcome to the Playground",
+            episodes: 9,
+            image: "https://static1.colliderimages.com/wordpress/wp-content/uploads/2021/11/arcane-jinx-vi.jpg",
+            year: "2021",
+            description: "Sisters Vi and Powder fight alongside their adopted family to survive in the seedy underbelly of Piltover.",
+            episodes: [
+              { number: 1, title: "Welcome to the Playground", duration: "45 min" },
+              { number: 2, title: "Some Mysteries Are Better Left Unsolved", duration: "45 min" },
+              { number: 3, title: "The Base Violence Necessary for Change", duration: "45 min" },
+              // ... more episodes
+            ]
+          },
+          {
+            number: 2,
+            title: "Progress Days",
+            episodes: 9,
+            image: "https://cdn1.dotesports.com/wp-content/uploads/2023/11/13103942/arcane-season-2-teaser.jpg",
+            year: "2024",
+            description: "The story continues as tensions rise between Piltover and Zaun, while old wounds threaten to reopen.",
+            episodes: [
+              { number: 1, title: "The Return", duration: "45 min" },
+              { number: 2, title: "New Beginnings", duration: "45 min" },
+              { number: 3, title: "Old Wounds", duration: "45 min" },
+              // ... more episodes
+            ]
+          },
+        ].map((season, index) => (
+          <TouchableOpacity
+            key={index}
+            style={[
+              styles.seasonCard,
+              gridStyle === 'grid' && styles.seasonCardGrid
+            ]}
+            onPress={() => navigation.navigate('SeasonEpisodes', { season, anime })}
+          >
+            <BlurView intensity={35} tint={isDarkMode ? "dark" : "light"} style={styles.seasonCardBlur}>
+              <Image source={{ uri: season.image }} style={styles.seasonImage} />
+              <LinearGradient
+                colors={["rgba(0,0,0,0)", "rgba(0,0,0,0.7)", "rgba(0,0,0,0.9)"]}
+                style={styles.seasonGradient}
+              />
+              <View style={styles.seasonInfo}>
+                <View style={styles.seasonHeader}>
+                  <Text style={styles.seasonNumber}>Season {season.number}</Text>
+                  <Text style={styles.seasonYear}>{season.year}</Text>
+                </View>
+                <Text style={[
+                  styles.seasonTitle,
+                  gridStyle === 'grid' && styles.seasonTitleGrid
+                ]}>{season.title}</Text>
+                <Text style={styles.seasonEpisodes}>{season.episodes.length} Episodes</Text>
+                <Text style={styles.seasonDescription} numberOfLines={2}>{season.description}</Text>
+              </View>
+            </BlurView>
+          </TouchableOpacity>
+        ))}
+      </View>
+    </View>
+  )
 
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
@@ -95,7 +179,7 @@ export default function AnimeDetails({ route, navigation }) {
         {!isDarkMode && (
           <>
             <View
-            style={[
+              style={[
                 styles.decorativeCircle,
                 {
                   top: "15%",
@@ -126,8 +210,8 @@ export default function AnimeDetails({ route, navigation }) {
         >
           <View style={[styles.glassOverlay, { backgroundColor: theme.glassOverlay }]} />
         </BlurView>
-              </View>
-              
+      </View>
+
       <StatusBar barStyle="light-content" backgroundColor="transparent" translucent={true} />
 
       {/* Status bar gradient overlay */}
@@ -139,7 +223,10 @@ export default function AnimeDetails({ route, navigation }) {
 
       <Animated.ScrollView
         style={styles.scrollView}
-        onScroll={Animated.event([{ nativeEvent: { contentOffset: { y: scrollY } } }], { useNativeDriver: true })}
+        onScroll={Animated.event(
+          [{ nativeEvent: { contentOffset: { y: scrollY } } }],
+          { useNativeDriver: true }
+        )}
         scrollEventThrottle={16}
         bounces={true}
         contentInset={{ top: 0 }}
@@ -147,14 +234,13 @@ export default function AnimeDetails({ route, navigation }) {
       >
         {/* Header Image with Parallax Effect */}
         <View style={styles.header}>
-          <Animated.View 
+          <Animated.View
             style={[
               styles.headerImageContainer,
               {
                 transform: [
                   { scale: headerImageScale },
-                  { translateY: headerImageTranslateY },
-                  { translateX: headerImageTranslateX },
+                  { translateY: headerImageTranslateY }
                 ],
               },
             ]}
@@ -185,99 +271,41 @@ export default function AnimeDetails({ route, navigation }) {
                 <Text style={styles.tagText}>Netflix</Text>
               </BlurView>
             </View>
-                </View>
-              </View>
+          </View>
+        </View>
 
         {/* Content needs extra padding to account for header height */}
         <View style={styles.contentContainer}>
           {/* Episode Info */}
           <View style={styles.episodeContainer}>
-            <View style={styles.episodeHeaderRow}>
-              <Text style={[styles.episodeTitle, { color: theme.text }]}>S1: E1 "Episode 1: Jinx Born"</Text>
-              <Text style={[styles.episodeDuration, { color: theme.textSecondary }]}>45 min</Text>
-            </View>
             <Text style={[styles.episodeDescription, { color: theme.textSecondary }]}>
               {anime.description ||
                 "Sisters Vi and Powder fight alongside their adopted family to survive in the seedy underbelly of Piltover."}
             </Text>
           </View>
 
-          {/* Continue Watch Button */}
-          <TouchableOpacity style={styles.continueButton}>
-            <BlurView intensity={35} tint={isDarkMode ? "dark" : "light"} style={styles.continueButtonBlur}>
+          {/* Watch Button */}
+          <TouchableOpacity style={styles.watchButton}>
+            <BlurView intensity={35} tint={isDarkMode ? "dark" : "light"} style={styles.watchButtonBlur}>
               <LinearGradient
                 colors={theme.gradient}
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 1 }}
-                style={styles.continueButtonGradient}
+                style={styles.watchButtonGradient}
               >
                 <Ionicons name="play" size={20} color="#fff" style={styles.playIcon} />
-                <Text style={styles.continueButtonText}>Continue Watch</Text>
+                <Text style={styles.watchButtonText}>Watch</Text>
               </LinearGradient>
             </BlurView>
           </TouchableOpacity>
 
           {/* Seasons Section */}
-          <View style={styles.seasonsSection}>
-            <Text style={[styles.sectionTitle, { color: theme.text }]}>Seasons</Text>
-            <View style={styles.seasonsContainer}>
-              {[
-                {
-                  number: 1,
-                  title: "Welcome to the Playground",
-                  episodes: 9,
-                  image: "https://static1.colliderimages.com/wordpress/wp-content/uploads/2021/11/arcane-jinx-vi.jpg",
-                  year: "2021",
-                  description:
-                    "Sisters Vi and Powder fight alongside their adopted family to survive in the seedy underbelly of Piltover.",
-                },
-                {
-                  number: 2,
-                  title: "Progress Days",
-                  episodes: 9,
-                  image: "https://cdn1.dotesports.com/wp-content/uploads/2023/11/13103942/arcane-season-2-teaser.jpg",
-                  year: "2024",
-                  description:
-                    "The story continues as tensions rise between Piltover and Zaun, while old wounds threaten to reopen.",
-                },
-              ].map((season, index) => (
-                <TouchableOpacity key={index} style={styles.seasonCard}>
-                  <BlurView intensity={35} tint={isDarkMode ? "dark" : "light"} style={styles.seasonCardBlur}>
-                    <Image source={{ uri: season.image }} style={styles.seasonImage} />
-                    <LinearGradient
-                      colors={["rgba(0,0,0,0)", "rgba(0,0,0,0.7)", "rgba(0,0,0,0.9)"]}
-                      style={styles.seasonGradient}
-                    />
-                    <View style={styles.seasonInfo}>
-                      <View style={styles.seasonHeader}>
-                        <Text style={styles.seasonNumber}>Season {season.number}</Text>
-                        <Text style={styles.seasonYear}>{season.year}</Text>
-                      </View>
-                      <Text style={styles.seasonTitle}>{season.title}</Text>
-                      <Text style={styles.seasonEpisodes}>{season.episodes} Episodes</Text>
-                      <Text style={styles.seasonDescription}>{season.description}</Text>
-                </View>
-                  </BlurView>
-                </TouchableOpacity>
-              ))}
-            </View>
-          </View>
+          {renderSeasonsSection()}
         </View>
       </Animated.ScrollView>
 
       {/* Back Button */}
-      <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
-        <BlurView intensity={35} tint={isDarkMode ? "dark" : "light"} style={styles.backButtonBlur}>
-          <LinearGradient
-            colors={theme.gradient}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 1 }}
-            style={styles.backButtonGradient}
-          >
-            <Ionicons name="chevron-back" size={24} color="#fff" />
-          </LinearGradient>
-        </BlurView>
-      </TouchableOpacity>
+      <BackButton />
     </View>
   )
 }
@@ -362,28 +390,6 @@ const styles = StyleSheet.create({
     textShadowOffset: { width: 0, height: 1 },
     textShadowRadius: 2,
   },
-  backButton: {
-    position: "absolute",
-    top: Platform.OS === "ios" ? 60 : 40,
-    left: 20,
-    zIndex: 10,
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    overflow: "hidden",
-  },
-  backButtonBlur: {
-    flex: 1,
-    overflow: "hidden",
-    borderRadius: 20,
-  },
-  backButtonGradient: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-    padding: 8,
-    opacity: 0.9,
-  },
   contentContainer: {
     marginTop: 20,
   },
@@ -391,45 +397,31 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     marginBottom: 20,
   },
-  episodeHeaderRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 8,
-  },
-  episodeTitle: {
-    fontSize: 18,
-    fontWeight: "600",
-    marginBottom: 4,
-  },
-  episodeDuration: {
-    fontSize: 14,
-  },
   episodeDescription: {
     fontSize: 14,
     lineHeight: 20,
     opacity: 0.8,
   },
-  continueButton: {
+  watchButton: {
     marginHorizontal: 20,
     height: 50,
     borderRadius: 12,
     overflow: "hidden",
     marginBottom: 30,
   },
-  continueButtonBlur: {
+  watchButtonBlur: {
     flex: 1,
     overflow: "hidden",
     borderRadius: 12,
   },
-  continueButtonGradient: {
+  watchButtonGradient: {
     flex: 1,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
     opacity: 0.9,
   },
-  continueButtonText: {
+  watchButtonText: {
     color: "#fff",
     fontSize: 16,
     fontWeight: "600",
@@ -442,7 +434,22 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     marginBottom: 30,
   },
+  seasonsHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  gridToggleButton: {
+    borderRadius: 8,
+    overflow: 'hidden',
+  },
   seasonsContainer: {
+    gap: 16,
+  },
+  seasonsGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
     gap: 16,
   },
   seasonCard: {
@@ -450,6 +457,10 @@ const styles = StyleSheet.create({
     height: 220,
     borderRadius: 16,
     overflow: "hidden",
+  },
+  seasonCardGrid: {
+    width: (screenWidth - 56) / 2, // 56 = 20 (padding) * 2 + 16 (gap)
+    height: 280,
   },
   seasonCardBlur: {
     flex: 1,
@@ -497,6 +508,10 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: "bold",
     marginBottom: 4,
+  },
+  seasonTitleGrid: {
+    fontSize: 18,
+    marginBottom: 2,
   },
   seasonEpisodes: {
     color: "#fff",

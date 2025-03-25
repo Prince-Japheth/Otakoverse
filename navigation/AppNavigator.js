@@ -6,17 +6,22 @@ import { useTheme } from '../context/ThemeContext';
 import { Ionicons } from '@expo/vector-icons';
 import CustomTabBar from '../components/CustomTabBar';
 import { useNavigation } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
+import HomeScreen from '../screens/HomeScreen';
+import SearchScreen from '../screens/SearchScreen';
+import FavouritesScreen from '../screens/FavouritesScreen';
+import SettingsScreen from '../screens/SettingsScreen';
+import AnimeDetails from '../screens/AnimeDetails';
+import SeasonEpisodes from '../screens/SeasonEpisodes';
 
 // Screens
 import SplashScreen from '../screens/SplashScreen';
 import OnboardingScreen from '../screens/OnboardingScreen';
-import HomeScreen from '../screens/HomeScreen';
 import TrendingScreen from '../screens/TrendingScreen';
-import SearchScreen from '../screens/SearchScreen';
-import SettingsScreen from '../screens/SettingsScreen';
-import AnimeDetails from '../screens/AnimeDetails';
 import AuthScreen from '../screens/AuthScreen';
 import SuggestionScreen from '../screens/SuggestionScreen';
+import LoadingScreen from '../screens/LoadingScreen';
+import RecentlyWatchedScreen from '../screens/RecentlyWatchedScreen';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -67,6 +72,15 @@ function TabNavigator() {
         }}
       />
       <Tab.Screen
+        name="Favourites"
+        component={FavouritesScreen}
+        options={{
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="heart" size={size} color={color} />
+          ),
+        }}
+      />
+      <Tab.Screen
         name="Settings"
         component={SettingsScreen}
         options={{
@@ -81,11 +95,41 @@ function TabNavigator() {
 
 const EmptyComponent = () => null;
 
+function StackNavigator() {
+  const { theme } = useTheme();
+
+  return (
+    <Stack.Navigator
+      screenOptions={{
+        headerShown: false,
+        cardStyle: { backgroundColor: theme.background },
+      }}
+    >
+      <Stack.Screen name="MainTabs" component={TabNavigator} />
+      <Stack.Screen 
+        name="AnimeDetails" 
+        component={AnimeDetails}
+        options={{
+          presentation: 'modal',
+          animation: 'slide_from_bottom',
+        }}
+      />
+      <Stack.Screen 
+        name="SeasonEpisodes" 
+        component={SeasonEpisodes}
+        options={{
+          presentation: 'modal',
+          animation: 'slide_from_bottom',
+        }}
+      />
+    </Stack.Navigator>
+  );
+}
+
 function MainNavigator() {
   const { theme } = useTheme();
   const [isLoading, setIsLoading] = useState(true);
   const [hasSeenOnboarding, setHasSeenOnboarding] = useState(false);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
     setTimeout(() => {
@@ -98,58 +142,7 @@ function MainNavigator() {
   }
 
   return (
-    <Stack.Navigator screenOptions={{ headerShown: false }}>
-      {!hasSeenOnboarding ? (
-        <Stack.Screen name="Onboarding">
-          {(props) => (
-            <OnboardingScreen
-              {...props}
-              onFinish={() => setHasSeenOnboarding(true)}
-            />
-          )}
-        </Stack.Screen>
-      ) : !isAuthenticated ? (
-        <Stack.Screen name="Auth">
-          {(props) => (
-            <AuthScreen
-              {...props}
-              onAuthenticate={() => setIsAuthenticated(true)}
-            />
-          )}
-        </Stack.Screen>
-      ) : (
-        <>
-          <Stack.Screen name="TabNavigator" component={TabNavigator} />
-          <Stack.Screen
-            name="AnimeDetails"
-            component={AnimeDetails}
-            options={{
-              headerShown: false,
-              presentation: 'modal',
-              animation: 'slide_from_bottom',
-            }}
-          />
-          <Stack.Screen
-            name="SearchModal"
-            component={SearchScreen}
-            options={{
-              headerShown: false,
-              presentation: 'modal',
-              animation: 'slide_from_bottom',
-            }}
-          />
-          <Stack.Screen
-            name="Suggestion"
-            component={SuggestionScreen}
-            options={{
-              headerShown: false,
-              presentation: 'modal',
-              animation: 'slide_from_bottom',
-            }}
-          />
-        </>
-      )}
-    </Stack.Navigator>
+    <StackNavigator />
   );
 }
 

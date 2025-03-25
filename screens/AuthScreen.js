@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, useEffect } from 'react';
 import {
   View,
   Text,
@@ -18,33 +18,40 @@ import { BlurView } from 'expo-blur';
 
 const { width, height } = Dimensions.get('window');
 
-export default function AuthScreen({ onAuthenticate }) {
+export default function AuthScreen({ navigation }) {
   const { theme } = useTheme();
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const videoRef = useRef(null);
 
-  React.useEffect(() => {
-        Animated.timing(fadeAnim, {
-          toValue: 1,
+  useEffect(() => {
+    // Start fade animation immediately
+    Animated.timing(fadeAnim, {
+      toValue: 1,
       duration: 1000,
-          useNativeDriver: true,
+      useNativeDriver: true,
     }).start();
   }, []);
 
   const handleGoogleSignIn = async () => {
     // TODO: Implement Google Sign In
     console.log('Google Sign In');
-    onAuthenticate();
+    navigation.navigate('Loading');
   };
 
   return (
     <View style={styles.container}>
-        <StatusBar
-          barStyle="light-content"
-          backgroundColor="transparent"
-          translucent={true}
-        />
+      <StatusBar
+        barStyle="light-content"
+        backgroundColor="transparent"
+        translucent={true}
+      />
       
+      {/* Fallback Background */}
+      <LinearGradient
+        colors={['#000', '#1a1a1a']}
+        style={StyleSheet.absoluteFill}
+      />
+
       {/* Video Background */}
       <Video
         ref={videoRef}
@@ -57,14 +64,12 @@ export default function AuthScreen({ onAuthenticate }) {
       />
 
       {/* Overlay Gradients */}
-
-        <LinearGradient
+      <LinearGradient
         colors={['transparent', 'rgba(0,0,0,0.3)', '#000']}
         style={[StyleSheet.absoluteFill, { marginTop: height * 0.5 }]}
       />
 
       <SafeAreaView style={styles.content}>
-
         <Animated.View 
           style={[
             styles.bottomSection,
@@ -80,11 +85,11 @@ export default function AuthScreen({ onAuthenticate }) {
           ]}
         >
           {/* Welcome Container with Blur */}
-          <BlurView intensity={30} tint="dark" experimentalBlurMethod="blur" style={styles.welcomeBlurContainer}>
+          <BlurView intensity={1} tint="dark" experimentalBlurMethod="blur" style={styles.welcomeBlurContainer}>
             <View style={styles.welcomeContainer}>
               <Text style={styles.welcomeTitle}>Welcome to Otakushi</Text>
               <Text style={styles.welcomeText}>
-              Stream your favorite anime anytime, anywhere. Save shows to your favorites and discover new series to love.
+                Stream your favorite anime anytime, anywhere. Save shows to your favorites and discover new series to love.
               </Text>
             </View>
 
@@ -107,7 +112,7 @@ export default function AuthScreen({ onAuthenticate }) {
           </BlurView>
         </Animated.View>
       </SafeAreaView>
-          </View>
+    </View>
   );
 }
 
@@ -126,35 +131,10 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
     paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
   },
-  topSection: {
-    paddingTop: 60,
-    paddingHorizontal: 40,
-  },
   bottomSection: {
     width: '100%',
     paddingHorizontal: 20,
     paddingBottom: Platform.OS === 'ios' ? 50 : 30,
-  },
-  logoContainer: {
-    alignItems: 'center',
-  },
-  logoBlur: {
-    padding: 20,
-    borderRadius: 20,
-    overflow: 'hidden',
-    backgroundColor: 'rgba(255,255,255,0.1)',
-  },
-  logoText: {
-    fontSize: 42,
-    fontWeight: 'bold',
-    color: '#fff',
-    letterSpacing: 3,
-  },
-  logoAccent: {
-    width: 40,
-    height: 4,
-    marginTop: 10,
-    borderRadius: 2,
   },
   welcomeBlurContainer: {
     borderRadius: 24,

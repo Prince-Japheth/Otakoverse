@@ -14,28 +14,22 @@ const slides = [
     id: "1",
     title: "Discover Anime",
     description: "Explore the latest and greatest anime series from Japan",
-    image: { 
-      uri: "https://static1.moviewebimages.com/wordpress/wp-content/uploads/sharedimages/2025/02/0315082_poster_w780.jpg?q=70&fit=crop&w=480&dpr=1",
-    },
+    image: require("../assets/OnboardingOne.jpg"),
     icon: "compass-outline",
   },
   {
-    id: "2",
+    id: "2", 
     title: "Track Your Favorites",
     description: "Keep track of what you're watching and discover new shows",
-    image: { 
-      uri: "https://static1.moviewebimages.com/wordpress/wp-content/uploads/sharedimages/2024/04/my-hero-s5-promo.jpg?q=70&fit=crop&w=480&dpr=1",
-    },
+    image: require("../assets/OnboardingTwo.jpg"),
     icon: "heart-outline",
   },
   {
     id: "3",
-    title: "Join the Community",
-    description: "Connect with other anime fans and share your thoughts",
-    image: { 
-      uri: "https://static1.moviewebimages.com/wordpress/wp-content/uploads/sharedimages/2024/07/hunter-x-hunter-2011.jpg?q=49&fit=crop&w=480&dpr=2",
-    },
-    icon: "people-outline",
+    title: "Watch Offline",
+    description: "Download episodes to watch on the go without internet",
+    image: require("../assets/OnboardingThree.jpg"),
+    icon: "download-outline",
   },
 ]
 
