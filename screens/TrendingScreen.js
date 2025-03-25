@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback, memo, useMemo } from 'react';
 import {
   StyleSheet,
   View,
@@ -11,6 +11,7 @@ import {
   Easing,
   StatusBar,
 } from 'react-native';
+import { BlurView } from 'expo-blur';
 import Carousel from 'react-native-snap-carousel';
 import { LinearGradient } from 'expo-linear-gradient';
 
@@ -90,6 +91,48 @@ const carouselData = [
   }
 ];
 
+// Memoized Image component for better performance
+const MemoizedImage = memo(({ uri }) => (
+  <Image
+    source={{ uri }}
+    style={styles.cardImage}
+    resizeMode="cover"
+  />
+));
+
+// Optimized carousel item component
+const CarouselItem = memo(({ item, scale, rotate, onPress }) => {
+  const animatedStyle = useMemo(() => [
+    styles.carouselItem,
+    {
+      transform: [
+        { perspective: 1000 },
+        { rotateY: rotate },
+        { scale },
+      ]
+    }
+  ], [rotate, scale]);
+
+  return (
+    <TouchableOpacity 
+      activeOpacity={0.9}
+      onPress={onPress}
+    >
+      <Animated.View style={animatedStyle}>
+        <View style={styles.cardContainer}>
+          <MemoizedImage uri={item.imageUrl} />
+        </View>
+      </Animated.View>
+    </TouchableOpacity>
+  );
+}, (prevProps, nextProps) => {
+  return (
+    prevProps.item.id === nextProps.item.id &&
+    prevProps.scale === nextProps.scale &&
+    prevProps.rotate === nextProps.rotate
+  );
+});
+
 export default function TrendingScreen({ navigation }) {
   const [activeIndex, setActiveIndex] = useState(0);
   const fadeAnim = useRef(new Animated.Value(1)).current;
@@ -97,17 +140,6 @@ export default function TrendingScreen({ navigation }) {
   const scrollX = useRef(new Animated.Value(0)).current;
   const glowAnim = useRef(new Animated.Value(0)).current;
   const rotateAnim = useRef(new Animated.Value(0)).current;
-
-  // Theme colors for each anime
-  const cardThemes = {
-    0: 'rgba(255, 102, 0, 0.5)',    // Orange for Dandadan
-    1: 'rgba(70, 130, 180, 0.5)',    // Steel blue for Vinland Saga
-    2: 'rgba(255, 105, 180, 0.5)',   // Hot pink
-    3: 'rgba(255, 215, 0, 0.5)',     // Gold for Baccano
-    4: 'rgba(135, 206, 235, 0.5)',   // Sky blue for Gintama
-    5: 'rgba(138, 43, 226, 0.5)',    // Purple for Code Geass
-    6: 'rgba(0, 191, 255, 0.5)'      // Deep sky blue for Steins;Gate
-  };
 
   useEffect(() => {
     // Continuous glow animation
@@ -182,11 +214,19 @@ export default function TrendingScreen({ navigation }) {
     ));
   };
 
-  const handleCardPress = (item) => {
+  const handleCardPress = useCallback((item) => {
     navigation.navigate('AnimeDetails', { anime: item });
-  };
+  }, [navigation]);
 
-  const renderCarouselItem = ({ item, index }) => {
+  const getItemLayout = useCallback((data, index) => ({
+    length: CARD_WIDTH,
+    offset: CARD_WIDTH * index,
+    index,
+  }), []);
+
+  const keyExtractor = useCallback((item) => item.id.toString(), []);
+
+  const renderCarouselItem = useCallback(({ item, index }) => {
     const scale = scrollX.interpolate({
       inputRange: [(item.id - 1) * CARD_WIDTH, item.id * CARD_WIDTH],
       outputRange: [0.85, 1],
@@ -199,53 +239,15 @@ export default function TrendingScreen({ navigation }) {
       extrapolate: 'clamp',
     });
 
-    const glowOpacity = scrollX.interpolate({
-      inputRange: [(item.id - 1) * CARD_WIDTH, item.id * CARD_WIDTH],
-      outputRange: [0.2, 0.5],
-      extrapolate: 'clamp',
-    });
-
     return (
-      <TouchableOpacity 
-        activeOpacity={0.9}
+      <CarouselItem
+        item={item}
+        scale={scale}
+        rotate={rotate}
         onPress={() => handleCardPress(item)}
-      >
-        <Animated.View 
-          style={[
-            styles.carouselItem,
-            {
-              transform: [
-                { perspective: 1000 },
-                { rotateY: rotate },
-                { scale },
-              ]
-            }
-          ]}
-        >
-          <Animated.View
-            style={[
-              styles.cardContainer,
-              {
-                shadowColor: cardThemes[item.id],
-                shadowOpacity: glowOpacity,
-              }
-            ]}
-          >
-            <Image
-              source={{ uri: item.imageUrl }}
-              style={[
-                styles.cardImage,
-                {
-                  borderColor: cardThemes[item.id].replace('0.5', '0.2'),
-                }
-              ]}
-              resizeMode="cover"
-            />
-          </Animated.View>
-        </Animated.View>
-      </TouchableOpacity>
+      />
     );
-  };
+  }, [handleCardPress, scrollX]);
 
   const spin = rotateAnim.interpolate({
     inputRange: [0, 1],
@@ -280,26 +282,26 @@ export default function TrendingScreen({ navigation }) {
       <View style={styles.cornerBL} />
       <View style={styles.cornerBR} />
 
-      {/* Animated Trending Tag */}
-      <Animated.View 
+      {/* Trending Tag with proper animation */}
+      <Animated.View
         style={[
-          styles.trendingTag,
+          styles.trendingTagContainer,
           {
             transform: [{ scale: Animated.add(1, Animated.multiply(glowAnim, 0.1)) }],
           }
         ]}
       >
-        <Animated.View style={[styles.trendingIconContainer, { transform: [{ rotate: spin }] }]}>
-          <Text style={styles.trendingIcon}>🔥</Text>
-        </Animated.View>
-        <Text style={styles.trendingText}>Trending</Text>
-        <LinearGradient
-          colors={['rgba(255,255,255,0.1)', 'rgba(255,255,255,0.2)']}
-          locations={[0, 1]}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 1 }}
-          style={styles.trendingGlow}
-        />
+        <BlurView
+          intensity={20}
+          tint="dark"
+          experimentalBlurMethod="blur"
+          style={styles.trendingTag}
+        >
+          <View style={styles.trendingContent}>
+            <Text style={styles.trendingIcon}>🔥</Text>
+            <Text style={styles.trendingText}>Trending</Text>
+          </View>
+        </BlurView>
       </Animated.View>
 
       <View style={styles.carouselContainer}>
@@ -327,6 +329,17 @@ export default function TrendingScreen({ navigation }) {
           activeSlideAlignment="center"
           inactiveSlideShift={10}
           useScrollView={false}
+          maxToRenderPerBatch={3}
+          windowSize={3}
+          initialNumToRender={3}
+          removeClippedSubviews={true}
+          keyExtractor={keyExtractor}
+          getItemLayout={getItemLayout}
+          updateCellsBatchingPeriod={50}
+          viewabilityConfig={{
+            viewAreaCoveragePercentThreshold: 50,
+            minimumViewTime: 100,
+          }}
         />
       </View>
     </View>
@@ -395,6 +408,7 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     backgroundColor: '#000',
     borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.2)',
   },
   playButton: {
     position: 'absolute',
@@ -436,22 +450,28 @@ const styles = StyleSheet.create({
     marginHorizontal: 5,
     backgroundColor: 'rgba(255,255,255,0.5)',
   },
-  trendingTag: {
+  trendingTagContainer: {
     position: 'absolute',
     top: 60,
     left: 20,
-    backgroundColor: 'rgba(95, 95, 95, 0.5)',
-    paddingHorizontal: 16,
-    paddingVertical: 8,
     borderRadius: 20,
-    flexDirection: 'row',
-    alignItems: 'center',
-    zIndex: 10,
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.2)',
     overflow: 'hidden',
   },
-  trendingIconContainer: {
+  trendingTag: {
+    borderRadius: 20,
+    overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.2)',
+    backgroundColor: 'rgba(0,0,0,0.3)',
+  },
+  trendingContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+  },
+  trendingIcon: {
+    fontSize: 18,
     marginRight: 6,
   },
   trendingText: {
@@ -459,21 +479,21 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
     letterSpacing: 0.5,
-    textShadowColor: 'rgba(255,255,255,0.5)',
-    textShadowOffset: { width: 0, height: 0 },
-    textShadowRadius: 10,
   },
-  trendingIcon: {
-    color: '#fff',
-    fontSize: 18,
-  },
-  trendingGlow: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    opacity: 0.5,
+  cardContainer: {
+    width: CARD_WIDTH,
+    height: CARD_HEIGHT,
+    borderRadius: 20,
+    overflow: 'hidden',
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 0,
+    },
+    shadowOpacity: 0.3,
+    shadowRadius: 35,
+    elevation: 20,
   },
   cornerTL: {
     position: 'absolute',
@@ -522,17 +542,5 @@ const styles = StyleSheet.create({
     right: 0,
     bottom: 0,
     height: '100%',
-  },
-  cardContainer: {
-    width: CARD_WIDTH,
-    height: CARD_HEIGHT,
-    borderRadius: 20,
-    overflow: 'visible',
-    shadowOffset: {
-      width: 0,
-      height: 0,
-    },
-    shadowRadius: 35,
-    elevation: 20,
   },
 }); 

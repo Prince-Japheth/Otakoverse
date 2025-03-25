@@ -127,7 +127,7 @@ export default function FavouritesScreen({ navigation }) {
   );
 
   const renderFavoritesGrid = () => (
-    <View style={styles.sectionContainer}>
+    <View style={[styles.sectionContainer, { marginTop: -40 }]}>
       <View style={styles.sectionHeader}>
         <Text style={[styles.sectionTitle, { color: theme.sectionTitle }]}>All Favorites</Text>
       </View>
