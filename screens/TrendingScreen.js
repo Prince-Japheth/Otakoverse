@@ -175,7 +175,7 @@ export default function TrendingScreen({ navigation }) {
             'rgba(0,0,0,0.6)',
             'rgba(0, 0, 0, 0.92)',
           ]}
-          locations={[0, 0.3, 0.5, 0.7, 0.8, 1]}
+          locations={[0, 0.3, 0.5, 0.7, 0.8]}
           style={styles.backgroundGradient}
         />
       </AnimatedImageBackground>
@@ -269,7 +269,7 @@ export default function TrendingScreen({ navigation }) {
             'rgba(0,0,0,0.1)',
             'rgba(0,0,0,0)'
           ]}
-          locations={[0, 0.3, 0.5]}
+          locations={[0, 0.3, 1]}
           style={styles.topGradient}
         />
       </View>
@@ -295,6 +295,7 @@ export default function TrendingScreen({ navigation }) {
         <Text style={styles.trendingText}>Trending</Text>
         <LinearGradient
           colors={['rgba(255,255,255,0.1)', 'rgba(255,255,255,0.2)']}
+          locations={[0, 1]}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
           style={styles.trendingGlow}
@@ -321,9 +322,6 @@ export default function TrendingScreen({ navigation }) {
           loop={true}
           autoplay={false}
           enableSnap={true}
-          enableMomentum={true}
-          decelerationRate={3}
-          lockScrollWhileSnapping={true}
           firstItem={2}
           layoutCardOffset={18}
           activeSlideAlignment="center"

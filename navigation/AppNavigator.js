@@ -13,6 +13,7 @@ import FavouritesScreen from '../screens/FavouritesScreen';
 import SettingsScreen from '../screens/SettingsScreen';
 import AnimeDetails from '../screens/AnimeDetails';
 import SeasonEpisodes from '../screens/SeasonEpisodes';
+import NotificationScreen from '../screens/NotificationScreen';
 
 // Screens
 import SplashScreen from '../screens/SplashScreen';
@@ -58,18 +59,18 @@ function TabNavigator() {
       />
       <Tab.Screen
         name="Search"
-        component={EmptyComponent}
+        component={SearchScreen}
         options={{
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="search" size={size} color={color} />
           ),
         }}
-        listeners={{
+        listeners={({ navigation }) => ({
           tabPress: (e) => {
             e.preventDefault();
             navigation.navigate('SearchModal');
           },
-        }}
+        })}
       />
       <Tab.Screen
         name="Favourites"
@@ -93,8 +94,6 @@ function TabNavigator() {
   );
 }
 
-const EmptyComponent = () => null;
-
 function StackNavigator() {
   const { theme } = useTheme();
 
@@ -107,6 +106,14 @@ function StackNavigator() {
     >
       <Stack.Screen name="MainTabs" component={TabNavigator} />
       <Stack.Screen 
+        name="SearchModal" 
+        component={SearchScreen}
+        options={{
+          presentation: 'modal',
+          animation: 'slide_from_bottom',
+        }}
+      />
+      <Stack.Screen 
         name="AnimeDetails" 
         component={AnimeDetails}
         options={{
@@ -117,6 +124,14 @@ function StackNavigator() {
       <Stack.Screen 
         name="SeasonEpisodes" 
         component={SeasonEpisodes}
+        options={{
+          presentation: 'modal',
+          animation: 'slide_from_bottom',
+        }}
+      />
+      <Stack.Screen 
+        name="Notification" 
+        component={NotificationScreen}
         options={{
           presentation: 'modal',
           animation: 'slide_from_bottom',
