@@ -11,7 +11,6 @@ import {
 import { BlurView } from 'expo-blur';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../context/ThemeContext';
-import BackButton from '../components/BackButton';
 
 // Sample notification data
 const notifications = [
@@ -103,7 +102,6 @@ export default function NotificationScreen({ navigation }) {
 
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
-      <BackButton />
       
       <View style={styles.header}>
         <Text style={[styles.headerTitle, { color: theme.text }]}>Notifications</Text>

@@ -2,9 +2,10 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Alert } from 'react-native';
 import { useTheme } from '../context/ThemeContext';
 import { Ionicons } from '@expo/vector-icons';
+import { Switch } from 'react-native-switch';
 
 export default function SettingsScreen() {
-  const { theme, toggleTheme } = useTheme();
+  const { theme, toggleTheme, isDarkMode } = useTheme();
   const [pushNotifications, setPushNotifications] = useState(true);
   const [emailNotifications, setEmailNotifications] = useState(false);
   
@@ -41,24 +42,27 @@ export default function SettingsScreen() {
         <View style={styles.settingContent}>
           <View style={styles.settingLeft}>
             {icon && <Ionicons name={icon} size={24} color={theme.text} style={styles.settingIcon} />}
-          <View>
-            <Text style={[styles.settingTitle, { color: theme.text }]}>{title}</Text>
-            {description && <Text style={[styles.settingDescription, { color: theme.textSecondary }]}>{description}</Text>}
+            <View>
+              <Text style={[styles.settingTitle, { color: theme.text }]}>{title}</Text>
+              {description && <Text style={[styles.settingDescription, { color: theme.textSecondary }]}>{description}</Text>}
             </View>
           </View>
           {type === 'switch' && (
-            <TouchableOpacity
-              style={[
-                styles.customSwitch,
-                { backgroundColor: value ? theme.primary : theme.switchBackground }
-              ]}
-              onPress={onPress}
-            >
-              <View style={[
-                styles.switchThumb,
-                { transform: [{ translateX: value ? 20 : 0 }] }
-              ]} />
-            </TouchableOpacity>
+            <Switch
+              value={value}
+              onValueChange={onPress}
+              disabled={false}
+              circleSize={24}
+              barHeight={26}
+              backgroundActive={theme.primary}
+              backgroundInactive={isDarkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)'}
+              circleActiveColor='#fff'
+              circleInActiveColor='#fff'
+              changeValueImmediately={true}
+              innerCircleStyle={{ alignItems: "center", justifyContent: "center" }}
+              switchWidthMultiplier={2}
+              switchBorderRadius={13}
+            />
           )}
         </View>
       </TouchableOpacity>
@@ -212,18 +216,6 @@ const styles = StyleSheet.create({
   settingDescription: {
     fontSize: 14,
     color: 'rgba(255,255,255,0.6)',
-  },
-  customSwitch: {
-    width: 44,
-    height: 24,
-    borderRadius: 12,
-    padding: 2,
-  },
-  switchThumb: {
-    width: 20,
-    height: 20,
-    borderRadius: 10,
-    backgroundColor: '#fff',
   },
   logoutButton: {
     flexDirection: 'row',

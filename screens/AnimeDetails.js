@@ -72,16 +72,15 @@ export default function AnimeDetails({ route, navigation }) {
           {
             number: 1,
             title: "Welcome to the Playground",
-            episodes: 9,
-            image: "https://static1.colliderimages.com/wordpress/wp-content/uploads/2021/11/arcane-jinx-vi.jpg",
-            year: "2021",
-            description: "Sisters Vi and Powder fight alongside their adopted family to survive in the seedy underbelly of Piltover.",
             episodes: [
               { number: 1, title: "Welcome to the Playground", duration: "45 min" },
               { number: 2, title: "Some Mysteries Are Better Left Unsolved", duration: "45 min" },
               { number: 3, title: "The Base Violence Necessary for Change", duration: "45 min" },
               // ... more episodes
-            ]
+            ],
+            image: "https://static1.colliderimages.com/wordpress/wp-content/uploads/2021/11/arcane-jinx-vi.jpg",
+            year: "2021",
+            description: "Sisters Vi and Powder fight alongside their adopted family to survive in the seedy underbelly of Piltover."
           },
           {
             number: 2,
@@ -104,7 +103,10 @@ export default function AnimeDetails({ route, navigation }) {
               styles.seasonCard,
               gridStyle === 'grid' && styles.seasonCardGrid
             ]}
-            onPress={() => navigation.navigate('SeasonEpisodes', { season, anime })}
+            onPress={() => navigation.navigate('HomeStack', {
+              screen: 'SeasonEpisodes',
+              params: { season, anime }
+            })}
           >
             <BlurView intensity={35} tint={isDarkMode ? "dark" : "light"} style={styles.seasonCardBlur}>
               <Image source={{ uri: season.image }} style={styles.seasonImage} />

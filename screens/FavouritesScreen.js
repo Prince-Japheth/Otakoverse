@@ -43,8 +43,17 @@ export default function FavouritesScreen({ navigation }) {
     <View style={styles.sectionContainer}>
       <View style={styles.sectionHeader}>
         <Text style={[styles.sectionTitle, { color: theme.sectionTitle }]}>Recently Watched</Text>
-        <TouchableOpacity onPress={() => navigation.navigate('RecentlyWatched')}>
+        <TouchableOpacity 
+          onPress={() => navigation.navigate('RecentlyWatched')}
+          style={styles.seeMoreButton}
+        >
           <Text style={[styles.seeAllText, { color: theme.seeAllText }]}>See More</Text>
+          <Ionicons 
+            name="chevron-forward" 
+            size={16} 
+            color={theme.seeAllText} 
+            style={styles.seeMoreIcon}
+          />
         </TouchableOpacity>
       </View>
 
@@ -127,7 +136,7 @@ export default function FavouritesScreen({ navigation }) {
   );
 
   const renderFavoritesGrid = () => (
-    <View style={[styles.sectionContainer, { marginTop: -40 }]}>
+    <View style={[styles.sectionContainer, { marginTop: -10 }]}>
       <View style={styles.sectionHeader}>
         <Text style={[styles.sectionTitle, { color: theme.sectionTitle }]}>All Favorites</Text>
       </View>
@@ -446,7 +455,15 @@ const styles = StyleSheet.create({
   cardsContainer: {
     paddingRight: 10,
   },
+  seeMoreButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  seeMoreIcon: {
+    marginLeft: 4,
+  },
   seeAllText: {
     fontSize: 14,
+    fontWeight: '500',
   },
 }); 

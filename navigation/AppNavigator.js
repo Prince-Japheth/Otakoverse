@@ -40,14 +40,33 @@ function TabNavigator() {
       }}
     >
       <Tab.Screen
-        name="Home"
-        component={HomeScreen}
+        name="HomeStack"
         options={{
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="home" size={size} color={color} />
           ),
         }}
-      />
+      >
+        {() => (
+          <Stack.Navigator screenOptions={{ headerShown: false }}>
+            <Stack.Screen name="HomeScreen" component={HomeScreen} />
+            <Stack.Screen 
+              name="AnimeDetails" 
+              component={AnimeDetails}
+              options={{
+                animation: 'slide_from_bottom',
+              }}
+            />
+            <Stack.Screen 
+              name="SeasonEpisodes" 
+              component={SeasonEpisodes}
+              options={{
+                animation: 'slide_from_bottom',
+              }}
+            />
+          </Stack.Navigator>
+        )}
+      </Tab.Screen>
       <Tab.Screen
         name="Trending"
         component={TrendingScreen}
@@ -73,14 +92,33 @@ function TabNavigator() {
         })}
       />
       <Tab.Screen
-        name="Favourites"
-        component={FavouritesScreen}
+        name="FavouritesStack"
         options={{
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="heart" size={size} color={color} />
           ),
         }}
-      />
+      >
+        {() => (
+          <Stack.Navigator screenOptions={{ headerShown: false }}>
+            <Stack.Screen name="FavouritesScreen" component={FavouritesScreen} />
+            <Stack.Screen 
+              name="RecentlyWatched" 
+              component={RecentlyWatchedScreen}
+              options={{
+                animation: 'slide_from_bottom',
+              }}
+            />
+            <Stack.Screen 
+              name="AnimeDetails" 
+              component={AnimeDetails}
+              options={{
+                animation: 'slide_from_bottom',
+              }}
+            />
+          </Stack.Navigator>
+        )}
+      </Tab.Screen>
       <Tab.Screen
         name="Settings"
         component={SettingsScreen}
@@ -108,22 +146,6 @@ function StackNavigator() {
       <Stack.Screen 
         name="SearchModal" 
         component={SearchScreen}
-        options={{
-          presentation: 'modal',
-          animation: 'slide_from_bottom',
-        }}
-      />
-      <Stack.Screen 
-        name="AnimeDetails" 
-        component={AnimeDetails}
-        options={{
-          presentation: 'modal',
-          animation: 'slide_from_bottom',
-        }}
-      />
-      <Stack.Screen 
-        name="SeasonEpisodes" 
-        component={SeasonEpisodes}
         options={{
           presentation: 'modal',
           animation: 'slide_from_bottom',
