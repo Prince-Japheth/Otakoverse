@@ -35,13 +35,13 @@ export default function LoadingScreen({ navigation }) {
       }),
     ]).start();
 
-    // Reset navigation stack to TabNavigator after 1 second
+    // Reset navigation stack to MainTabs after 2 seconds
     const timer = setTimeout(() => {
       navigation.reset({
         index: 0,
-        routes: [{ name: 'TabNavigator' }],
+        routes: [{ name: 'MainTabs' }],
       });
-    }, 1000);
+    }, 2000);
 
     return () => clearTimeout(timer);
   }, []);

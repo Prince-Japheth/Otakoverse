@@ -180,7 +180,10 @@ function MainNavigator() {
       } catch (error) {
         console.error('Error checking onboarding status:', error);
       } finally {
-        setIsLoading(false);
+        // Add a minimum delay of 2.5 seconds for the splash screen
+        setTimeout(() => {
+          setIsLoading(false);
+        }, 2500);
       }
     };
 
@@ -206,27 +209,33 @@ function MainNavigator() {
       screenOptions={{
         headerShown: false,
         cardStyle: { backgroundColor: theme.background },
+        presentation: 'card',
+        animation: 'fade',
       }}
     >
       {!hasSeenOnboarding && (
         <Stack.Screen 
           name="Onboarding" 
           component={OnboardingScreen}
-          options={{
-            animation: 'fade',
-          }}
         />
       )}
       {!isAuthenticated && (
         <Stack.Screen 
           name="Auth" 
           component={AuthScreen}
-          options={{
-            animation: 'fade',
-          }}
         />
       )}
-      <Stack.Screen name="MainTabs" component={TabNavigator} />
+      <Stack.Screen 
+        name="Loading" 
+        component={LoadingScreen}
+      />
+      <Stack.Screen 
+        name="MainTabs" 
+        component={TabNavigator}
+        options={{
+          animation: 'none',
+        }}
+      />
       <Stack.Screen 
         name="SearchModal" 
         component={SearchScreen}

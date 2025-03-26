@@ -42,11 +42,8 @@ export default function AuthScreen({ navigation }) {
       // Save authentication state
       await AsyncStorage.setItem('isAuthenticated', 'true');
       
-      // Navigate directly to MainTabs
-      navigation.reset({
-        index: 0,
-        routes: [{ name: 'MainTabs' }],
-      });
+      // Navigate to Loading screen
+      navigation.navigate('Loading');
     } catch (error) {
       console.error('Sign in error:', error);
       // Handle error appropriately
