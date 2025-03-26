@@ -169,7 +169,7 @@ export default function HomeScreen({ navigation }) {
           contentContainerCustomStyle={{ alignItems: 'center' }}
           onSnapToItem={(index) => setActiveSlide(index)}
           loop={true}
-          autoplay={true}
+          autoplay={false}
           autoplayInterval={5000}
           slideStyle={{ alignItems: 'center' }}
           shouldOptimizeUpdates={true}

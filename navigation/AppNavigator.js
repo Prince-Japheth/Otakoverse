@@ -23,6 +23,7 @@ import AuthScreen from '../screens/AuthScreen';
 import SuggestionScreen from '../screens/SuggestionScreen';
 import LoadingScreen from '../screens/LoadingScreen';
 import RecentlyWatchedScreen from '../screens/RecentlyWatchedScreen';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -167,19 +168,82 @@ function MainNavigator() {
   const { theme } = useTheme();
   const [isLoading, setIsLoading] = useState(true);
   const [hasSeenOnboarding, setHasSeenOnboarding] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
-    setTimeout(() => {
-      setIsLoading(false);
-    }, 2000);
+    // Simulate checking if user has seen onboarding
+    const checkOnboarding = async () => {
+      try {
+        // TODO: Replace with actual storage check
+        const hasSeen = await AsyncStorage.getItem('hasSeenOnboarding');
+        setHasSeenOnboarding(hasSeen === 'true');
+      } catch (error) {
+        console.error('Error checking onboarding status:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    checkOnboarding();
   }, []);
+
+  const handleOnboardingComplete = async () => {
+    try {
+      // TODO: Replace with actual storage save
+      await AsyncStorage.setItem('hasSeenOnboarding', 'true');
+      setHasSeenOnboarding(true);
+    } catch (error) {
+      console.error('Error saving onboarding status:', error);
+    }
+  };
 
   if (isLoading) {
     return <SplashScreen onFinish={() => setIsLoading(false)} />;
   }
 
   return (
-    <StackNavigator />
+    <Stack.Navigator
+      screenOptions={{
+        headerShown: false,
+        cardStyle: { backgroundColor: theme.background },
+      }}
+    >
+      {!hasSeenOnboarding && (
+        <Stack.Screen 
+          name="Onboarding" 
+          component={OnboardingScreen}
+          options={{
+            animation: 'fade',
+          }}
+        />
+      )}
+      {!isAuthenticated && (
+        <Stack.Screen 
+          name="Auth" 
+          component={AuthScreen}
+          options={{
+            animation: 'fade',
+          }}
+        />
+      )}
+      <Stack.Screen name="MainTabs" component={TabNavigator} />
+      <Stack.Screen 
+        name="SearchModal" 
+        component={SearchScreen}
+        options={{
+          presentation: 'modal',
+          animation: 'slide_from_bottom',
+        }}
+      />
+      <Stack.Screen 
+        name="Notification" 
+        component={NotificationScreen}
+        options={{
+          presentation: 'modal',
+          animation: 'slide_from_bottom',
+        }}
+      />
+    </Stack.Navigator>
   );
 }
 

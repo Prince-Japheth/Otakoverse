@@ -35,7 +35,7 @@ const slides = [
 
 const AnimatedTouchable = Animated.createAnimatedComponent(TouchableOpacity)
 
-export default function OnboardingScreen({ onFinish }) {
+export default function OnboardingScreen({ navigation }) {
   const { theme } = useTheme()
   const [currentIndex, setCurrentIndex] = useState(0)
   const [prevIndex, setPrevIndex] = useState(0)
@@ -172,7 +172,8 @@ export default function OnboardingScreen({ onFinish }) {
     if (currentIndex < slides.length - 1 && !isAnimating) {
       animateSlide(true)
     } else if (currentIndex === slides.length - 1) {
-      onFinish()
+      // Navigate to Auth screen when finished
+      navigation.navigate('Auth')
     }
   }
 

@@ -15,6 +15,7 @@ import { useTheme } from '../context/ThemeContext';
 import { AnimatedButton } from '../components/AnimatedButton';
 import { Ionicons } from '@expo/vector-icons';
 import { BlurView } from 'expo-blur';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const { width, height } = Dimensions.get('window');
 
@@ -33,9 +34,23 @@ export default function AuthScreen({ navigation }) {
   }, []);
 
   const handleGoogleSignIn = async () => {
-    // TODO: Implement Google Sign In
-    console.log('Google Sign In');
-    navigation.navigate('Loading');
+    try {
+      // TODO: Implement actual Google Sign In logic here
+      // For now, we'll just simulate a successful sign in
+      await new Promise(resolve => setTimeout(resolve, 1500)); // Simulate API call
+      
+      // Save authentication state
+      await AsyncStorage.setItem('isAuthenticated', 'true');
+      
+      // Navigate directly to MainTabs
+      navigation.reset({
+        index: 0,
+        routes: [{ name: 'MainTabs' }],
+      });
+    } catch (error) {
+      console.error('Sign in error:', error);
+      // Handle error appropriately
+    }
   };
 
   return (

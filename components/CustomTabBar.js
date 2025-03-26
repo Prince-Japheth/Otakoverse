@@ -60,13 +60,13 @@ const CustomTabBar = ({ state, descriptors, navigation }) => {
                 };
 
                 let iconName;
-                if (route.name === 'Home') {
+                if (route.name === 'HomeStack') {
                   iconName = isFocused ? 'home' : 'home-outline';
                 } else if (route.name === 'Trending') {
                   iconName = isFocused ? 'trending-up' : 'trending-up-outline';
                 } else if (route.name === 'Search') {
                   iconName = 'search-outline';
-                } else if (route.name === 'Favourites') {
+                } else if (route.name === 'FavouritesStack') {
                   iconName = isFocused ? 'heart' : 'heart-outline';
                 } else if (route.name === 'Settings') {
                   iconName = isFocused ? 'person' : 'person-outline';
