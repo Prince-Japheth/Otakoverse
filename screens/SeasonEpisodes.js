@@ -357,3 +357,22 @@ const styles = StyleSheet.create({
   },
 })
 
+const anime = {
+  seasons: [
+    {
+      id: 1,
+      title: "Welcome to the Playground",
+      image: "https://picsum.photos/1200/800?random=20",
+      year: "2021",
+      description: "Sisters Vi and Powder fight alongside their adopted family to survive in the seedy underbelly of Piltover."
+    },
+    {
+      id: 2,
+      title: "Progress Days",
+      image: "https://picsum.photos/1200/800?random=21",
+      year: "2024",
+      description: "The story continues as tensions rise between Piltover and Zaun, while old wounds threaten to reopen."
+    }
+  ]
+}
+

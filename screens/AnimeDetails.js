@@ -73,17 +73,17 @@ export default function AnimeDetails({ route, navigation }) {
             number: 1,
             title: "Welcome to the Playground",
             episodes: [
-              { number: 1, title: "Welcome to the Playground", duration: "45 min", thumbnail: "https://picsum.photos/seed/ep1/800/450" },
-              { number: 2, title: "Some Mysteries Are Better Left Unsolved", duration: "45 min", thumbnail: "https://picsum.photos/seed/ep2/800/450" },
-              { number: 3, title: "The Base Violence Necessary for Change", duration: "45 min", thumbnail: "https://picsum.photos/seed/ep3/800/450" },
-              { number: 4, title: "Happy Progress Day!", duration: "45 min", thumbnail: "https://picsum.photos/seed/ep4/800/450" },
-              { number: 5, title: "Everybody Wants to Be My Enemy", duration: "45 min", thumbnail: "https://picsum.photos/seed/ep5/800/450" },
-              { number: 6, title: "When These Walls Come Tumbling Down", duration: "45 min", thumbnail: "https://picsum.photos/seed/ep6/800/450" },
-              { number: 7, title: "The Boy Savior", duration: "45 min", thumbnail: "https://picsum.photos/seed/ep7/800/450" },
-              { number: 8, title: "Oil and Water", duration: "45 min", thumbnail: "https://picsum.photos/seed/ep8/800/450" },
-              { number: 9, title: "The Monster You Created", duration: "45 min", thumbnail: "https://picsum.photos/seed/ep9/800/450" }
+              { number: 1, title: "Welcome to the Playground", duration: "45 min", thumbnail: "https://picsum.photos/800/450?random=1" },
+              { number: 2, title: "Some Mysteries Are Better Left Unsolved", duration: "45 min", thumbnail: "https://picsum.photos/800/450?random=2" },
+              { number: 3, title: "The Base Violence Necessary for Change", duration: "45 min", thumbnail: "https://picsum.photos/800/450?random=3" },
+              { number: 4, title: "Happy Progress Day!", duration: "45 min", thumbnail: "https://picsum.photos/800/450?random=4" },
+              { number: 5, title: "Everybody Wants to Be My Enemy", duration: "45 min", thumbnail: "https://picsum.photos/800/450?random=5" },
+              { number: 6, title: "When These Walls Come Tumbling Down", duration: "45 min", thumbnail: "https://picsum.photos/800/450?random=6" },
+              { number: 7, title: "The Boy Savior", duration: "45 min", thumbnail: "https://picsum.photos/800/450?random=7" },
+              { number: 8, title: "Oil and Water", duration: "45 min", thumbnail: "https://picsum.photos/800/450?random=8" },
+              { number: 9, title: "The Monster You Created", duration: "45 min", thumbnail: "https://picsum.photos/800/450?random=9" }
             ],
-            image: "https://static1.colliderimages.com/wordpress/wp-content/uploads/2021/11/arcane-jinx-vi.jpg",
+            image: "https://picsum.photos/1200/800?random=10",
             year: "2021",
             description: "Sisters Vi and Powder fight alongside their adopted family to survive in the seedy underbelly of Piltover."
           },
@@ -91,14 +91,14 @@ export default function AnimeDetails({ route, navigation }) {
             number: 2,
             title: "Progress Days",
             episodes: [
-              { number: 1, title: "The Return", duration: "45 min", thumbnail: "https://picsum.photos/seed/s2ep1/800/450" },
-              { number: 2, title: "New Beginnings", duration: "45 min", thumbnail: "https://picsum.photos/seed/s2ep2/800/450" },
-              { number: 3, title: "Old Wounds", duration: "45 min", thumbnail: "https://picsum.photos/seed/s2ep3/800/450" },
-              { number: 4, title: "The Art of War", duration: "45 min", thumbnail: "https://picsum.photos/seed/s2ep4/800/450" },
-              { number: 5, title: "The Tides of Change", duration: "45 min", thumbnail: "https://picsum.photos/seed/s2ep5/800/450" },
-              { number: 6, title: "The Final Stand", duration: "45 min", thumbnail: "https://picsum.photos/seed/s2ep6/800/450" }
+              { number: 1, title: "The Return", duration: "45 min", thumbnail: "https://picsum.photos/800/450?random=11" },
+              { number: 2, title: "New Beginnings", duration: "45 min", thumbnail: "https://picsum.photos/800/450?random=12" },
+              { number: 3, title: "Old Wounds", duration: "45 min", thumbnail: "https://picsum.photos/800/450?random=13" },
+              { number: 4, title: "The Art of War", duration: "45 min", thumbnail: "https://picsum.photos/800/450?random=14" },
+              { number: 5, title: "The Tides of Change", duration: "45 min", thumbnail: "https://picsum.photos/800/450?random=15" },
+              { number: 6, title: "The Final Stand", duration: "45 min", thumbnail: "https://picsum.photos/800/450?random=16" }
             ],
-            image: "https://cdn1.dotesports.com/wp-content/uploads/2023/11/13103942/arcane-season-2-teaser.jpg",
+            image: "https://picsum.photos/1200/800?random=17",
             year: "2024",
             description: "The story continues as tensions rise between Piltover and Zaun, while old wounds threaten to reopen."
           },
