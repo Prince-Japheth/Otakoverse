@@ -73,10 +73,15 @@ export default function AnimeDetails({ route, navigation }) {
             number: 1,
             title: "Welcome to the Playground",
             episodes: [
-              { number: 1, title: "Welcome to the Playground", duration: "45 min" },
-              { number: 2, title: "Some Mysteries Are Better Left Unsolved", duration: "45 min" },
-              { number: 3, title: "The Base Violence Necessary for Change", duration: "45 min" },
-              // ... more episodes
+              { number: 1, title: "Welcome to the Playground", duration: "45 min", thumbnail: "https://picsum.photos/seed/ep1/800/450" },
+              { number: 2, title: "Some Mysteries Are Better Left Unsolved", duration: "45 min", thumbnail: "https://picsum.photos/seed/ep2/800/450" },
+              { number: 3, title: "The Base Violence Necessary for Change", duration: "45 min", thumbnail: "https://picsum.photos/seed/ep3/800/450" },
+              { number: 4, title: "Happy Progress Day!", duration: "45 min", thumbnail: "https://picsum.photos/seed/ep4/800/450" },
+              { number: 5, title: "Everybody Wants to Be My Enemy", duration: "45 min", thumbnail: "https://picsum.photos/seed/ep5/800/450" },
+              { number: 6, title: "When These Walls Come Tumbling Down", duration: "45 min", thumbnail: "https://picsum.photos/seed/ep6/800/450" },
+              { number: 7, title: "The Boy Savior", duration: "45 min", thumbnail: "https://picsum.photos/seed/ep7/800/450" },
+              { number: 8, title: "Oil and Water", duration: "45 min", thumbnail: "https://picsum.photos/seed/ep8/800/450" },
+              { number: 9, title: "The Monster You Created", duration: "45 min", thumbnail: "https://picsum.photos/seed/ep9/800/450" }
             ],
             image: "https://static1.colliderimages.com/wordpress/wp-content/uploads/2021/11/arcane-jinx-vi.jpg",
             year: "2021",
@@ -85,16 +90,17 @@ export default function AnimeDetails({ route, navigation }) {
           {
             number: 2,
             title: "Progress Days",
-            episodes: 9,
+            episodes: [
+              { number: 1, title: "The Return", duration: "45 min", thumbnail: "https://picsum.photos/seed/s2ep1/800/450" },
+              { number: 2, title: "New Beginnings", duration: "45 min", thumbnail: "https://picsum.photos/seed/s2ep2/800/450" },
+              { number: 3, title: "Old Wounds", duration: "45 min", thumbnail: "https://picsum.photos/seed/s2ep3/800/450" },
+              { number: 4, title: "The Art of War", duration: "45 min", thumbnail: "https://picsum.photos/seed/s2ep4/800/450" },
+              { number: 5, title: "The Tides of Change", duration: "45 min", thumbnail: "https://picsum.photos/seed/s2ep5/800/450" },
+              { number: 6, title: "The Final Stand", duration: "45 min", thumbnail: "https://picsum.photos/seed/s2ep6/800/450" }
+            ],
             image: "https://cdn1.dotesports.com/wp-content/uploads/2023/11/13103942/arcane-season-2-teaser.jpg",
             year: "2024",
-            description: "The story continues as tensions rise between Piltover and Zaun, while old wounds threaten to reopen.",
-            episodes: [
-              { number: 1, title: "The Return", duration: "45 min" },
-              { number: 2, title: "New Beginnings", duration: "45 min" },
-              { number: 3, title: "Old Wounds", duration: "45 min" },
-              // ... more episodes
-            ]
+            description: "The story continues as tensions rise between Piltover and Zaun, while old wounds threaten to reopen."
           },
         ].map((season, index) => (
           <TouchableOpacity

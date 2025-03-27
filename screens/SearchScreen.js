@@ -167,7 +167,6 @@ export default function SearchScreen({ navigation }) {
   const handleSearch = (text) => {
     setQuery(text);
     if (text.trim()) {
-      addToSearchHistory(text);
       // Simulate search with dummy data
       const filtered = dummyResults.filter((item) =>
         item.title.toLowerCase().includes(text.toLowerCase())
@@ -185,6 +184,12 @@ export default function SearchScreen({ navigation }) {
         toValue: 0,
         useNativeDriver: true,
       }).start();
+    }
+  };
+
+  const handleSubmit = () => {
+    if (query.trim()) {
+      addToSearchHistory(query);
     }
   };
 
@@ -382,6 +387,8 @@ export default function SearchScreen({ navigation }) {
           placeholderTextColor={theme.textSecondary}
           value={query}
           onChangeText={handleSearch}
+          onSubmitEditing={handleSubmit}
+          returnKeyType="done"
         />
         {query.length > 0 && (
           <TouchableOpacity
@@ -657,4 +664,4 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginLeft: 12,
   },
-}); 
+});
