@@ -206,7 +206,7 @@ export default function HomeScreen({ navigation }) {
     <View style={styles.sectionContainer}>
       <View style={styles.sectionHeader}>
         <Text style={[styles.sectionTitle, { color: theme.sectionTitle }]}>Recent Watched</Text>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={() => navigation.navigate('FavouritesStack', { screen: 'RecentlyWatched' })}>
           <Text style={[styles.seeAllText, { color: theme.seeAllText }]}>See all</Text>
         </TouchableOpacity>
       </View>
@@ -268,7 +268,7 @@ export default function HomeScreen({ navigation }) {
     <View style={styles.sectionContainer}>
       <View style={styles.sectionHeader}>
         <Text style={[styles.sectionTitle, { color: theme.sectionTitle }]}>My Favorites</Text>
-        <TouchableOpacity onPress={() => navigation.navigate('Favourites')}>
+        <TouchableOpacity onPress={() => navigation.navigate('FavouritesStack', { screen: 'FavouritesScreen' })}>
           <Text style={[styles.seeAllText, { color: theme.seeAllText }]}>See all</Text>
         </TouchableOpacity>
       </View>
@@ -401,7 +401,7 @@ export default function HomeScreen({ navigation }) {
         style={styles.statusBarGradient}
         pointerEvents="none"
       />
-      <Header title="Hello," subtitle="Timur K." />
+      <Header title="Hello," />
       <Animated.ScrollView
         style={styles.scrollView}
         showsVerticalScrollIndicator={false}

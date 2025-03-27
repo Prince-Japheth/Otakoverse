@@ -297,7 +297,7 @@ export default function FavouritesScreen({ navigation }) {
         style={styles.statusBarGradient}
         pointerEvents="none"
       />
-      <Header title="Favorites & History" subtitle="Timur K." showNotification={true} />
+      <Header title="Favorites & History" showNotification={true} />
       <Animated.ScrollView
         style={styles.scrollView}
         showsVerticalScrollIndicator={false}

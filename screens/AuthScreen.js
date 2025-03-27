@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -7,7 +7,8 @@ import {
   StatusBar,
   SafeAreaView,
   Platform,
-  Animated
+  Animated,
+  ActivityIndicator,
 } from 'react-native';
 import { Video, ResizeMode } from 'expo-av';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -23,6 +24,7 @@ export default function AuthScreen({ navigation }) {
   const { theme } = useTheme();
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const videoRef = useRef(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     // Start fade animation immediately
@@ -35,6 +37,7 @@ export default function AuthScreen({ navigation }) {
 
   const handleGoogleSignIn = async () => {
     try {
+      setIsLoading(true);
       // TODO: Implement actual Google Sign In logic here
       // For now, we'll just simulate a successful sign in
       await new Promise(resolve => setTimeout(resolve, 1500)); // Simulate API call
@@ -46,6 +49,7 @@ export default function AuthScreen({ navigation }) {
       navigation.navigate('Loading');
     } catch (error) {
       console.error('Sign in error:', error);
+      setIsLoading(false);
       // Handle error appropriately
     }
   };
@@ -109,12 +113,19 @@ export default function AuthScreen({ navigation }) {
             <View style={styles.buttonContainer}>
               <AnimatedButton
                 onPress={handleGoogleSignIn}
-                style={styles.button}
+                style={[styles.button, isLoading && styles.buttonLoading]}
                 gradientColors={theme.gradient}
                 isBlurred={false}
+                disabled={isLoading}
               >
-                <Ionicons name="logo-google" size={24} color="#fff" style={styles.buttonIcon} />
-                <Text style={styles.buttonText}>Continue with Google</Text>
+                {isLoading ? (
+                  <ActivityIndicator color="#fff" size="small" />
+                ) : (
+                  <>
+                    <Ionicons name="logo-google" size={24} color="#fff" style={styles.buttonIcon} />
+                    <Text style={styles.buttonText}>Continue with Google</Text>
+                  </>
+                )}
               </AnimatedButton>
               
               <Text style={styles.termsText}>
@@ -189,5 +200,8 @@ const styles = StyleSheet.create({
     fontSize: 12,
     textAlign: 'center',
     marginTop: 16,
+  },
+  buttonLoading: {
+    opacity: 0.8,
   },
 }); 

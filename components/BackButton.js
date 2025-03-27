@@ -15,10 +15,17 @@ export default function BackButton({ style }) {
       onPress={() => navigation.goBack()}
     >
       <BlurView
-        intensity={20}
+        intensity={isDarkMode ? 20 : 0}
         tint={isDarkMode ? 'dark' : 'light'}
         experimentalBlurMethod={isDarkMode ? "blur" : undefined}
-        style={[styles.blur, { backgroundColor: theme.headerIcon }]}
+        style={[
+          styles.blur, 
+          { 
+            backgroundColor: isDarkMode 
+              ? theme.headerIcon 
+              : theme.surfaceVariant
+          }
+        ]}
       >
         <Ionicons name="chevron-back" size={22} color={theme.text} />
       </BlurView>

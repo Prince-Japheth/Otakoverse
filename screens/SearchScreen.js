@@ -18,6 +18,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const { width } = Dimensions.get('window');
 const GRID_VIEW_KEY = '@search_view_mode';
+const SEARCH_HISTORY_KEY = '@search_history';
 
 const dummyResults = [
   // Featured Content
@@ -92,12 +93,14 @@ export default function SearchScreen({ navigation }) {
   const { theme } = useTheme();
   const [query, setQuery] = useState('');
   const [results, setResults] = useState([]);
+  const [searchHistory, setSearchHistory] = useState([]);
   const searchBarAnim = useRef(new Animated.Value(0)).current;
   const resultsAnim = useRef(new Animated.Value(0)).current;
   const [isGridView, setIsGridView] = useState(true);
 
   useEffect(() => {
     loadViewPreference();
+    loadSearchHistory();
   }, []);
 
   const loadViewPreference = async () => {
@@ -108,6 +111,46 @@ export default function SearchScreen({ navigation }) {
       }
     } catch (error) {
       console.error('Error loading view preference:', error);
+    }
+  };
+
+  const loadSearchHistory = async () => {
+    try {
+      const history = await AsyncStorage.getItem(SEARCH_HISTORY_KEY);
+      if (history) {
+        setSearchHistory(JSON.parse(history));
+      }
+    } catch (error) {
+      console.error('Error loading search history:', error);
+    }
+  };
+
+  const saveSearchHistory = async (newHistory) => {
+    try {
+      await AsyncStorage.setItem(SEARCH_HISTORY_KEY, JSON.stringify(newHistory));
+      setSearchHistory(newHistory);
+    } catch (error) {
+      console.error('Error saving search history:', error);
+    }
+  };
+
+  const addToSearchHistory = (searchTerm) => {
+    if (!searchTerm.trim()) return;
+    
+    const newHistory = [
+      searchTerm,
+      ...searchHistory.filter(item => item !== searchTerm)
+    ].slice(0, 5); // Keep only last 5 searches
+    
+    saveSearchHistory(newHistory);
+  };
+
+  const clearSearchHistory = async () => {
+    try {
+      await AsyncStorage.removeItem(SEARCH_HISTORY_KEY);
+      setSearchHistory([]);
+    } catch (error) {
+      console.error('Error clearing search history:', error);
     }
   };
 
@@ -123,17 +166,26 @@ export default function SearchScreen({ navigation }) {
 
   const handleSearch = (text) => {
     setQuery(text);
-    // Simulate search with dummy data
-    const filtered = dummyResults.filter((item) =>
-      item.title.toLowerCase().includes(text.toLowerCase())
-    );
-    setResults(filtered);
+    if (text.trim()) {
+      addToSearchHistory(text);
+      // Simulate search with dummy data
+      const filtered = dummyResults.filter((item) =>
+        item.title.toLowerCase().includes(text.toLowerCase())
+      );
+      setResults(filtered);
 
-    // Animate results
-    Animated.spring(resultsAnim, {
-      toValue: text.length > 0 ? 1 : 0,
-      useNativeDriver: true,
-    }).start();
+      // Animate results
+      Animated.spring(resultsAnim, {
+        toValue: 1,
+        useNativeDriver: true,
+      }).start();
+    } else {
+      setResults([]);
+      Animated.spring(resultsAnim, {
+        toValue: 0,
+        useNativeDriver: true,
+      }).start();
+    }
   };
 
   React.useEffect(() => {
@@ -156,11 +208,51 @@ export default function SearchScreen({ navigation }) {
       outputRange: [0, 1],
     });
 
+    const handlePress = () => {
+      navigation.navigate('AnimeDetails', {
+        anime: {
+          title: item.title,
+          imageUrl: item.image,
+          rating: item.rating,
+          episodes: "12",
+          status: "Complete • Season 1",
+          description: "A captivating anime series that has captured the hearts of fans worldwide.",
+        }
+      });
+    };
+
     if (isGridView) {
       return (
+        <TouchableOpacity onPress={handlePress}>
+          <Animated.View
+            style={[
+              styles.gridCard,
+              {
+                backgroundColor: theme.surfaceVariant,
+                transform: [{ translateY }],
+                opacity,
+              },
+            ]}
+          >
+            <Image source={{ uri: item.image }} style={styles.gridImage} />
+            <View style={styles.gridInfo}>
+              <Text style={[styles.gridTitle, { color: theme.text }]} numberOfLines={2}>
+                {item.title}
+              </Text>
+              <View style={styles.gridRatingContainer}>
+                <Text style={[styles.gridRatingText, { color: theme.primary }]}>★ {item.rating}</Text>
+              </View>
+            </View>
+          </Animated.View>
+        </TouchableOpacity>
+      );
+    }
+
+    return (
+      <TouchableOpacity onPress={handlePress}>
         <Animated.View
           style={[
-            styles.gridCard,
+            styles.resultCard,
             {
               backgroundColor: theme.surfaceVariant,
               transform: [{ translateY }],
@@ -168,47 +260,49 @@ export default function SearchScreen({ navigation }) {
             },
           ]}
         >
-          <Image source={{ uri: item.image }} style={styles.gridImage} />
-          <View style={styles.gridInfo}>
-            <Text style={[styles.gridTitle, { color: theme.text }]} numberOfLines={2}>
-              {item.title}
+          <Image source={{ uri: item.image }} style={styles.resultImage} />
+          <View style={styles.resultInfo}>
+            <Text style={[styles.resultTitle, { color: theme.text }]}>{item.title}</Text>
+            <Text style={[styles.resultGenre, { color: theme.textSecondary }]}>
+              {item.genre}
             </Text>
-            <View style={styles.gridRatingContainer}>
-              <Text style={[styles.gridRatingText, { color: theme.primary }]}>★ {item.rating}</Text>
+            <View style={styles.ratingContainer}>
+              <Text style={[styles.ratingText, { color: theme.primary }]}>★ {item.rating}</Text>
             </View>
           </View>
         </Animated.View>
-      );
-    }
-
-    return (
-      <Animated.View
-        style={[
-          styles.resultCard,
-          {
-            backgroundColor: theme.surfaceVariant,
-            transform: [{ translateY }],
-            opacity,
-          },
-        ]}
-      >
-        <Image source={{ uri: item.image }} style={styles.resultImage} />
-        <View style={styles.resultInfo}>
-          <Text style={[styles.resultTitle, { color: theme.text }]}>{item.title}</Text>
-          <Text style={[styles.resultGenre, { color: theme.textSecondary }]}>
-            {item.genre}
-          </Text>
-          <View style={styles.ratingContainer}>
-            <Text style={[styles.ratingText, { color: theme.primary }]}>★ {item.rating}</Text>
-          </View>
-        </View>
-      </Animated.View>
+      </TouchableOpacity>
     );
   };
 
+  const renderSearchHistory = () => (
+    <View style={styles.searchHistoryContainer}>
+      <View style={styles.searchHistoryHeader}>
+        <Text style={[styles.searchHistoryTitle, { color: theme.text }]}>Recent Searches</Text>
+        {searchHistory.length > 0 && (
+          <TouchableOpacity onPress={clearSearchHistory}>
+            <Text style={[styles.clearHistoryText, { color: theme.primary }]}>Clear All</Text>
+          </TouchableOpacity>
+        )}
+      </View>
+      {searchHistory.map((item, index) => (
+        <TouchableOpacity
+          key={index}
+          style={styles.searchHistoryItem}
+          onPress={() => handleSearch(item)}
+        >
+          <Ionicons name="time-outline" size={20} color={theme.textSecondary} />
+          <Text style={[styles.searchHistoryText, { color: theme.text }]}>{item}</Text>
+        </TouchableOpacity>
+      ))}
+    </View>
+  );
+
   const renderEmptyState = () => {
     if (query.length === 0) {
-      return (
+      return searchHistory.length > 0 ? (
+        renderSearchHistory()
+      ) : (
         <View style={styles.emptyState}>
           <Text style={[styles.emptyStateText, { color: theme.text }]}>
             Search for your favorite anime
@@ -289,6 +383,18 @@ export default function SearchScreen({ navigation }) {
           value={query}
           onChangeText={handleSearch}
         />
+        {query.length > 0 && (
+          <TouchableOpacity
+            onPress={() => handleSearch('')}
+            style={[styles.clearButton, { backgroundColor: theme.surfaceVariant }]}
+          >
+            <Ionicons
+              name="close-circle"
+              size={24}
+              color={theme.text}
+            />
+          </TouchableOpacity>
+        )}
         <TouchableOpacity
           onPress={toggleViewMode}
           style={[styles.viewToggleButton, { backgroundColor: theme.surfaceVariant }]}
@@ -301,7 +407,9 @@ export default function SearchScreen({ navigation }) {
         </TouchableOpacity>
       </Animated.View>
 
-      {results.length === 0 ? (
+      {query.length === 0 ? (
+        renderEmptyState()
+      ) : results.length === 0 ? (
         renderEmptyState()
       ) : (
         <FlatList
@@ -508,5 +616,45 @@ const styles = StyleSheet.create({
   gridRatingText: {
     fontSize: 12,
     fontWeight: '600',
+  },
+  clearButton: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  searchHistoryContainer: {
+    flex: 1,
+    padding: 16,
+    paddingTop: 20,
+  },
+  searchHistoryHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  searchHistoryTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+  },
+  clearHistoryText: {
+    fontSize: 14,
+    fontWeight: '500',
+  },
+  searchHistoryItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderRadius: 12,
+    marginBottom: 8,
+  },
+  searchHistoryText: {
+    fontSize: 16,
+    marginLeft: 12,
   },
 }); 

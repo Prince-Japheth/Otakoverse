@@ -12,6 +12,10 @@ export default function SettingsScreen() {
   // Mock subscription data - replace with actual data from your backend
   const subscriptionEndDate = new Date();
   subscriptionEndDate.setDate(subscriptionEndDate.getDate() + 30);
+  
+  // Calculate days remaining in subscription
+  const today = new Date();
+  const daysRemaining = 15;
 
   const handleLogout = () => {
     Alert.alert(
@@ -33,7 +37,7 @@ export default function SettingsScreen() {
     );
   };
 
-  const renderSettingItem = ({ title, description, onPress, type = 'switch', value, icon }) => {
+  const renderSettingItem = ({ title, description, onPress, type = 'switch', value, icon, customContent }) => {
     return (
       <TouchableOpacity 
         style={[styles.settingItem, { backgroundColor: theme.cardBackground }]} 
@@ -45,6 +49,7 @@ export default function SettingsScreen() {
             <View>
               <Text style={[styles.settingTitle, { color: theme.text }]}>{title}</Text>
               {description && <Text style={[styles.settingDescription, { color: theme.textSecondary }]}>{description}</Text>}
+              {customContent}
             </View>
           </View>
           {type === 'switch' && (
@@ -52,16 +57,19 @@ export default function SettingsScreen() {
               value={value}
               onValueChange={onPress}
               disabled={false}
-              circleSize={24}
-              barHeight={26}
+              circleSize={19}
+              barHeight={30}
               backgroundActive={theme.primary}
               backgroundInactive={isDarkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)'}
               circleActiveColor='#fff'
               circleInActiveColor='#fff'
               changeValueImmediately={true}
-              innerCircleStyle={{ alignItems: "center", justifyContent: "center" }}
-              switchWidthMultiplier={2}
-              switchBorderRadius={13}
+              switchWidthMultiplier={2.6}
+              switchBorderRadius={100}
+              containerStyle={{overflow: 'hidden'}}
+              renderActiveText={false}
+              renderInActiveText={false}
+              innerCircleStyle={{ borderWidth: 0, elevation: 0 }}
             />
           )}
         </View>
@@ -77,6 +85,25 @@ export default function SettingsScreen() {
     });
   };
 
+  const SubscriptionCountdown = () => (
+    <View style={styles.countdownContainer}>
+      <View style={styles.countdownProgress}>
+        <View 
+          style={[
+            styles.countdownFill, 
+            { 
+              width: `${(daysRemaining / 30) * 100}%`,
+              backgroundColor: daysRemaining < 7 ? theme.error : theme.primary 
+            }
+          ]} 
+        />
+      </View>
+      <Text style={[styles.countdownText, { color: theme.textSecondary }]}>
+        {daysRemaining} {daysRemaining === 1 ? 'day' : 'days'} remaining
+      </Text>
+    </View>
+  );
+
   return (
     <ScrollView style={[styles.container, { backgroundColor: theme.background }]}>
       <View style={styles.header}>
@@ -86,10 +113,11 @@ export default function SettingsScreen() {
       <View style={styles.section}>
         <Text style={[styles.sectionTitle, { color: theme.text }]}>Subscription</Text>
         {renderSettingItem({
-          title: 'Premium Status',
-          description: `Active until ${formatDate(subscriptionEndDate)}`,
+          title: 'Subscription Countdown',
+          description: `Renews on ${formatDate(subscriptionEndDate)}`,
           type: 'button',
-          icon: 'star'
+          icon: 'timer-outline',
+          customContent: <SubscriptionCountdown />
         })}
       </View>
 
@@ -100,7 +128,7 @@ export default function SettingsScreen() {
           description: 'Toggle dark/light theme', 
           onPress: toggleTheme,
           type: 'switch',
-          value: theme === 'dark',
+          value: isDarkMode,
           icon: 'moon'
         })}
       </View>
@@ -109,7 +137,7 @@ export default function SettingsScreen() {
         <Text style={[styles.sectionTitle, { color: theme.text }]}>Notifications</Text>
         {renderSettingItem({
           title: 'Push Notifications',
-          description: 'Receive updates about new episodes',
+          description: 'Receive updates about new \nepisodes',
           onPress: () => setPushNotifications(!pushNotifications),
           type: 'switch',
           value: pushNotifications,
@@ -190,7 +218,7 @@ const styles = StyleSheet.create({
     letterSpacing: 1,
   },
   settingItem: {
-    padding: 16,
+    paddingVertical: 16,
     borderRadius: 12,
     marginBottom: 12,
     backgroundColor: 'rgba(255,255,255,0.05)',
@@ -216,6 +244,28 @@ const styles = StyleSheet.create({
   settingDescription: {
     fontSize: 14,
     color: 'rgba(255,255,255,0.6)',
+    marginBottom: 8,
+  },
+  countdownContainer: {
+    marginTop: 6,
+    width: '100%',
+  },
+  countdownProgress: {
+    height: 6,
+    backgroundColor: 'rgba(255,255,255,0.1)',
+    borderRadius: 3,
+    overflow: 'hidden',
+    width: '100%',
+    maxWidth: 200,
+  },
+  countdownFill: {
+    height: '100%',
+    borderRadius: 3,
+  },
+  countdownText: {
+    fontSize: 12,
+    marginTop: 4,
+    fontWeight: '500',
   },
   logoutButton: {
     flexDirection: 'row',
@@ -223,8 +273,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     margin: 20,
     padding: 16,
-    borderRadius: 12,
+    borderRadius: 15,
     backgroundColor: '#ff4444',
+    marginBottom: 120,
   },
   logoutText: {
     color: '#fff',
@@ -232,4 +283,4 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     marginLeft: 8,
   },
-}); 
+});

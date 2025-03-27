@@ -55,7 +55,17 @@ const CustomTabBar = ({ state, descriptors, navigation }) => {
                   });
 
                   if (!isFocused && !event.defaultPrevented) {
-                    navigation.navigate(route.name);
+                    if (route.name === 'FavouritesStack') {
+                      navigation.navigate('FavouritesStack', { screen: 'FavouritesScreen' });
+                    } else if (route.name === 'HomeStack') {
+                      navigation.navigate('HomeStack', { screen: 'HomeScreen' });
+                    } else if (route.name === 'Trending') {
+                      navigation.navigate('Trending', { screen: 'TrendingScreen' });
+                    } else if (route.name === 'Search') {
+                      navigation.navigate('Search', { screen: 'SearchScreen' });
+                    } else {
+                      navigation.navigate(route.name);
+                    }
                   }
                 };
 

@@ -49,7 +49,9 @@ function TabNavigator() {
         }}
       >
         {() => (
-          <Stack.Navigator screenOptions={{ headerShown: false }}>
+          <Stack.Navigator 
+          screenOptions={{ headerShown: false }}
+            initialRouteName="HomeScreen">
             <Stack.Screen name="HomeScreen" component={HomeScreen} />
             <Stack.Screen 
               name="AnimeDetails" 
@@ -70,16 +72,30 @@ function TabNavigator() {
       </Tab.Screen>
       <Tab.Screen
         name="Trending"
-        component={TrendingScreen}
         options={{
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="trending-up" size={size} color={color} />
           ),
         }}
-      />
+      >
+        {() => (
+          <Stack.Navigator 
+            screenOptions={{ headerShown: false }}
+            initialRouteName="TrendingScreen"
+          >
+            <Stack.Screen name="TrendingScreen" component={TrendingScreen} />
+            <Stack.Screen 
+              name="AnimeDetails" 
+              component={AnimeDetails}
+              options={{
+                animation: 'slide_from_bottom',
+              }}
+            />
+          </Stack.Navigator>
+        )}
+      </Tab.Screen>
       <Tab.Screen
         name="Search"
-        component={SearchScreen}
         options={{
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="search" size={size} color={color} />
@@ -91,7 +107,22 @@ function TabNavigator() {
             navigation.navigate('SearchModal');
           },
         })}
-      />
+      >
+        {() => (
+          <Stack.Navigator 
+            screenOptions={{ headerShown: false }}
+            initialRouteName="SearchScreen"
+          >
+            <Stack.Screen 
+              name="SearchScreen" 
+              component={SearchScreen}
+              options={{
+                animation: 'slide_from_bottom',
+              }}
+            />
+          </Stack.Navigator>
+        )}
+      </Tab.Screen>
       <Tab.Screen
         name="FavouritesStack"
         options={{
@@ -101,7 +132,10 @@ function TabNavigator() {
         }}
       >
         {() => (
-          <Stack.Navigator screenOptions={{ headerShown: false }}>
+          <Stack.Navigator 
+            screenOptions={{ headerShown: false }}
+            initialRouteName="FavouritesScreen"
+          >
             <Stack.Screen name="FavouritesScreen" component={FavouritesScreen} />
             <Stack.Screen 
               name="RecentlyWatched" 
@@ -150,6 +184,22 @@ function StackNavigator() {
         options={{
           presentation: 'modal',
           animation: 'slide_from_bottom',
+          animationDuration: 300,
+          gestureEnabled: true,
+          gestureDirection: 'vertical',
+          cardOverlayEnabled: true,
+        }}
+      />
+      <Stack.Screen 
+        name="AnimeDetails" 
+        component={AnimeDetails}
+        options={{
+          presentation: 'modal',
+          animation: 'slide_from_bottom',
+          animationDuration: 300,
+          gestureEnabled: true,
+          gestureDirection: 'vertical',
+          cardOverlayEnabled: true,
         }}
       />
       <Stack.Screen 
@@ -171,16 +221,13 @@ function MainNavigator() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
-    // Simulate checking if user has seen onboarding
     const checkOnboarding = async () => {
       try {
-        // TODO: Replace with actual storage check
         const hasSeen = await AsyncStorage.getItem('hasSeenOnboarding');
         setHasSeenOnboarding(hasSeen === 'true');
       } catch (error) {
         console.error('Error checking onboarding status:', error);
       } finally {
-        // Add a minimum delay of 2.5 seconds for the splash screen
         setTimeout(() => {
           setIsLoading(false);
         }, 2500);
@@ -189,16 +236,6 @@ function MainNavigator() {
 
     checkOnboarding();
   }, []);
-
-  const handleOnboardingComplete = async () => {
-    try {
-      // TODO: Replace with actual storage save
-      await AsyncStorage.setItem('hasSeenOnboarding', 'true');
-      setHasSeenOnboarding(true);
-    } catch (error) {
-      console.error('Error saving onboarding status:', error);
-    }
-  };
 
   if (isLoading) {
     return <SplashScreen onFinish={() => setIsLoading(false)} />;
@@ -217,17 +254,28 @@ function MainNavigator() {
         <Stack.Screen 
           name="Onboarding" 
           component={OnboardingScreen}
+          options={{
+            cardStyle: { backgroundColor: theme.background },
+          }}
         />
       )}
       {!isAuthenticated && (
         <Stack.Screen 
           name="Auth" 
           component={AuthScreen}
+          options={{
+            cardStyle: { backgroundColor: theme.background },
+            presentation: 'card',
+            animation: 'fade',
+          }}
         />
       )}
       <Stack.Screen 
         name="Loading" 
         component={LoadingScreen}
+        options={{
+          cardStyle: { backgroundColor: theme.background },
+        }}
       />
       <Stack.Screen 
         name="MainTabs" 
@@ -242,6 +290,22 @@ function MainNavigator() {
         options={{
           presentation: 'modal',
           animation: 'slide_from_bottom',
+          animationDuration: 300,
+          gestureEnabled: true,
+          gestureDirection: 'vertical',
+          cardOverlayEnabled: true,
+        }}
+      />
+      <Stack.Screen 
+        name="AnimeDetails" 
+        component={AnimeDetails}
+        options={{
+          presentation: 'modal',
+          animation: 'slide_from_bottom',
+          animationDuration: 300,
+          gestureEnabled: true,
+          gestureDirection: 'vertical',
+          cardOverlayEnabled: true,
         }}
       />
       <Stack.Screen 

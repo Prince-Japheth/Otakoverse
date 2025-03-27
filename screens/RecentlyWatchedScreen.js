@@ -198,7 +198,12 @@ export default function RecentlyWatchedScreen({ navigation }) {
         style={styles.statusBarGradient}
         pointerEvents="none"
       />
-      <Header title="Recently Watched" subtitle="Continue Watching" showNotification={true} />
+      <Header 
+        title="Recently Watched" 
+        showNotification={true} 
+        showBackButton={true}
+        onBackPress={() => navigation.goBack()}
+      />
       <Animated.ScrollView
         style={styles.scrollView}
         showsVerticalScrollIndicator={false}

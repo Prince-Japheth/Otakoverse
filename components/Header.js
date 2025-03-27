@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -10,10 +10,31 @@ import { BlurView } from 'expo-blur';
 import { useTheme } from '../context/ThemeContext';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-export default function Header({ title, subtitle, showNotification = true }) {
+export default function Header({ title, showNotification = true, showBackButton = false, onBackPress }) {
   const { theme, isDarkMode } = useTheme();
   const navigation = useNavigation();
+  const [userName, setUserName] = useState('');
+
+  useEffect(() => {
+    const loadUserName = async () => {
+      try {
+        const name = await AsyncStorage.getItem('userName');
+        if (name) {
+          setUserName(name);
+        } else {
+          // Default name if none is set
+          setUserName('Timur K.');
+        }
+      } catch (error) {
+        console.error('Error loading user name:', error);
+        setUserName('Timur K.');
+      }
+    };
+
+    loadUserName();
+  }, []);
 
   return (
     <View style={styles.header}>
@@ -24,13 +45,21 @@ export default function Header({ title, subtitle, showNotification = true }) {
       >
         <View style={styles.headerContent}>
           <View style={styles.userInfo}>
+            {showBackButton && (
+              <TouchableOpacity 
+                style={styles.backButton}
+                onPress={onBackPress}
+              >
+                <Ionicons name="chevron-back" size={28} color={theme.text} />
+              </TouchableOpacity>
+            )}
             <Image
-              source={{ uri: 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEASABIAAD/4gKgSUNDX1BST0ZJTEUAAQEAAAKQbGNtcwQwAABtbnRyUkdCIFhZWiAH3wAHABsADQAYADFhY3NwQVBQTAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA9tYAAQAAAADTLWxjbXMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAtkZXNjAAABCAAAADhjcHJ0AAABQAAAAE53dHB0AAABkAAAABRjaGFkAAABpAAAACxyWFlaAAAB0AAAABRiWFlaAAAB5AAAABRnWFlaAAAB+AAAABRyVFJDAAACDAAAACBnVFJDAAACLAAAACBiVFJDAAACTAAAACBjaHJtAAACbAAAACRtbHVjAAAAAAAAAAEAAAAMZW5VUwAAABwAAAAcAHMAUgBHAEIAIABiAHUAaQBsAHQALQBpAG4AAG1sdWMAAAAAAAAAAQAAAAxlblVTAAAAMgAAABwATgBvACAAYwBvAHAAeQByAGkAZwBoAHQALAAgAHUAcwBlACAAZgByAGUAZQBsAHkAAAAAWFlaIAAAAAAAAPbWAAEAAAAA0y1zZjMyAAAAAAABDEoAAAXj///zKgAAB5sAAP2H///7ov///aMAAAPYAADAlFhZWiAAAAAAAABvoAAAOPUAAAOQWFlaIAAAAAAAACSdAAAPgwAAtr9YWVogAAAAAAAAYqUAALeQAAAY3nBhcmEAAAAAAAMAAAACZmYAAPKnAAANWQAAE9AAAApbcGFyYQAAAAAAAwAAAAJmZgAA8qcAAA1ZAAAT0AAACltwYXJhAAAAAAADAAAAAmZmAADypwAADVkAABPQAAAKW2Nocm0AAAAAAAMAAAAAo9cAAFR7AABMzQAAmZoAACZmAAAPXA==' }}
+              source={{ uri: 'https://randomuser.me/api/portraits/men/2.jpg' }}
               style={styles.profilePic}
             />
             <View style={styles.greeting}>
               <Text style={[styles.greetingText, { color: theme.greetingText }]}>{title}</Text>
-              <Text style={[styles.userName, { color: theme.userName }]}>{subtitle}</Text>
+              <Text style={[styles.userName, { color: theme.userName }]}>{userName}</Text>
             </View>
           </View>
           
@@ -80,6 +109,10 @@ const styles = StyleSheet.create({
   userInfo: {
     flexDirection: 'row',
     alignItems: 'center',
+  },
+  backButton: {
+    marginRight: 8,
+    padding: 4,
   },
   profilePic: {
     width: 40,

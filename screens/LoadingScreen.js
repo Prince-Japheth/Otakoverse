@@ -47,14 +47,17 @@ export default function LoadingScreen({ navigation }) {
   }, []);
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: '#000' }]}>
       <StatusBar
         barStyle="light-content"
-        backgroundColor="transparent"
-        translucent={true}
+        backgroundColor="#000"
+        translucent={false}
       />
 
-      {/* Background Elements */}
+      {/* Solid Background */}
+      <View style={[StyleSheet.absoluteFill, { backgroundColor: '#000' }]} />
+
+      {/* Gradient Overlay */}
       <LinearGradient
         colors={['#000', '#1a1a1a']}
         style={StyleSheet.absoluteFill}
@@ -95,6 +98,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: '#000',
   },
   content: {
     alignItems: 'center',

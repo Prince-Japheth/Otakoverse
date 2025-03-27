@@ -99,7 +99,7 @@ export default function SplashScreen({ onFinish }) {
             tint={isDarkMode ? "dark" : "light"}
             style={styles.logoBlur}
           >
-            <Text style={[styles.logoText, { color: theme.text }]}>オ</Text>
+            <Text style={[styles.logoText, { color: 'white' }]}>オ</Text>
           </BlurView>
         </LinearGradient>
       </Animated.View>

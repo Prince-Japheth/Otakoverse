@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -9,77 +9,143 @@ import {
   Dimensions,
   StatusBar,
   Platform,
+  ActivityIndicator,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { BlurView } from 'expo-blur';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../context/ThemeContext';
 import BackButton from '../components/BackButton';
+import { useVideoPlayer, VideoView } from 'expo-video';
+import { useEvent } from 'expo';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const { width: screenWidth } = Dimensions.get('window');
+
+// Sample video URLs for different episodes
+const episodeVideos = {
+  1: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
+  2: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4',
+  3: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4',
+  4: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4',
+  5: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4',
+  6: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdowns.mp4',
+  7: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdowns.mp4',
+  8: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdowns.mp4',
+  9: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdowns.mp4',
+  10: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdowns.mp4',
+};
 
 export default function SeasonEpisodes({ route, navigation }) {
   const { season, anime } = route.params;
   const { theme, isDarkMode } = useTheme();
+  const [currentEpisode, setCurrentEpisode] = useState(1);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [showControls, setShowControls] = useState(true);
+
+  const player = useVideoPlayer(episodeVideos[currentEpisode], (player) => {
+    player.loop = false;
+    setIsLoading(false);
+  });
+
+  const { isPlaying: playerIsPlaying } = useEvent(player, 'playingChange', {
+    isPlaying: player.playing,
+  });
+
+  useEffect(() => {
+    setIsPlaying(playerIsPlaying);
+  }, [playerIsPlaying]);
+
+  const handleEpisodePress = (episodeNumber) => {
+    setCurrentEpisode(episodeNumber);
+    setIsLoading(true);
+    player.source = episodeVideos[episodeNumber];
+    player.play();
+  };
+
+  const handleVideoPress = () => {
+    setShowControls(!showControls);
+  };
 
   return (
-    <View style={[styles.container, { backgroundColor: theme.background }]}>
-      <StatusBar barStyle="light-content" backgroundColor="transparent" translucent={true} />
+    <SafeAreaView style={[styles.container, { backgroundColor: theme.background }]} edges={['top']}>
+      <StatusBar barStyle="light-content" backgroundColor="black" translucent={false} />
 
-      {/* Header Image */}
-      <View style={styles.header}>
-        <Image source={{ uri: season.image }} style={styles.headerImage} />
-        <LinearGradient
-          colors={[
-            "rgba(0,0,0,0)",
-            "rgba(0,0,0,0.7)",
-            "rgba(0,0,0,0.9)",
-            "rgba(0,0,0,1)",
-          ]}
-          style={styles.headerGradient}
-        />
+      {/* Fixed Video Player Container */}
+      <View style={styles.fixedHeader}>
+        <TouchableOpacity 
+          style={styles.videoContainer}
+          onPress={handleVideoPress}
+          activeOpacity={1}
+        >
+          <VideoView 
+            style={styles.video} 
+            player={player} 
+            allowsFullscreen 
+            allowsPictureInPicture 
+            showControls={showControls}
+          />
+          {isLoading && (
+            <View style={styles.loadingContainer}>
+              <ActivityIndicator size="large" color="#FFFFFF" />
+            </View>
+          )}
+          {showControls && (
+            <BackButton style={styles.backButton} />
+          )}
+        </TouchableOpacity>
       </View>
 
-      {/* Back Button */}
-      <BackButton />
+      {/* Scrollable Content */}
+      <ScrollView style={styles.scrollContent} bounces={false}>
+        {/* Season Info */}
+        <View style={styles.seasonInfo}>
+          <Text style={[styles.seasonTitle, { color: theme.text }]}>{season.title}</Text>
+          <Text style={[styles.seasonYear, { color: theme.textSecondary }]}>{season.year}</Text>
+          <Text style={[styles.seasonDescription, { color: theme.textSecondary }]}>
+            {season.description}
+          </Text>
+        </View>
 
-      {/* Season Info */}
-      <View style={styles.seasonInfo}>
-        <Text style={[styles.seasonTitle, { color: theme.text }]}>{season.title}</Text>
-        <Text style={[styles.seasonYear, { color: theme.textSecondary }]}>{season.year}</Text>
-        <Text style={[styles.seasonDescription, { color: theme.textSecondary }]}>
-          {season.description}
-        </Text>
-      </View>
-
-      {/* Episodes List */}
-      <ScrollView style={styles.episodesList}>
-        {season.episodes.map((episode, index) => (
-          <TouchableOpacity
-            key={index}
-            style={styles.episodeCard}
-            onPress={() => navigation.navigate('EpisodeDetails', { episode, season, anime })}
-          >
-            <BlurView intensity={35} tint={isDarkMode ? "dark" : "light"} style={styles.episodeCardBlur}>
-              <Image 
-                source={{ uri: episode.thumbnail || season.image }} 
-                style={styles.episodeThumbnail}
-              />
-              <View style={styles.episodeContent}>
-                <View style={styles.episodeNumber}>
-                  <Text style={styles.episodeNumberText}>{episode.number}</Text>
+        {/* Episodes List */}
+        <View style={styles.episodesList}>
+          {season.episodes.map((episode, index) => (
+            <TouchableOpacity
+              key={index}
+              style={[
+                styles.episodeCard,
+                currentEpisode === episode.number && styles.currentEpisodeCard
+              ]}
+              onPress={() => handleEpisodePress(episode.number)}
+            >
+              <BlurView intensity={35} tint={isDarkMode ? "dark" : "light"} style={styles.episodeCardBlur}>
+                <Image 
+                  source={{ uri: episode.thumbnail || season.image }} 
+                  style={styles.episodeThumbnail}
+                />
+                <View style={styles.episodeContent}>
+                  <View style={styles.episodeNumber}>
+                    <Text style={styles.episodeNumberText}>{episode.number}</Text>
+                  </View>
+                  <View style={styles.episodeInfo}>
+                    <Text style={[styles.episodeTitle, { color: theme.text }]}>{episode.title}</Text>
+                    <Text style={[styles.episodeDuration, { color: theme.textSecondary }]}>{episode.duration}</Text>
+                  </View>
+                  {currentEpisode === episode.number && (
+                    <Ionicons 
+                      name={isPlaying ? "pause-circle" : "play-circle"} 
+                      size={24} 
+                      color={theme.primary} 
+                    />
+                  )}
                 </View>
-                <View style={styles.episodeInfo}>
-                  <Text style={[styles.episodeTitle, { color: theme.text }]}>{episode.title}</Text>
-                  <Text style={[styles.episodeDuration, { color: theme.textSecondary }]}>{episode.duration}</Text>
-                </View>
-                <Ionicons name="chevron-forward" size={20} color={theme.textSecondary} />
-              </View>
-            </BlurView>
-          </TouchableOpacity>
-        ))}
+              </BlurView>
+            </TouchableOpacity>
+          ))}
+        </View>
       </ScrollView>
-    </View>
+    </SafeAreaView>
   );
 }
 
@@ -87,25 +153,34 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  header: {
-    height: 200,
-    position: 'relative',
-  },
-  headerImage: {
-    width: '100%',
-    height: '100%',
-    resizeMode: 'cover',
-  },
-  headerGradient: {
+  fixedHeader: {
     position: 'absolute',
+    top: 0,
     left: 0,
     right: 0,
-    bottom: 0,
+    zIndex: 2,
+  },
+  videoContainer: {
+    height: 250,
+    backgroundColor: '#000',
+  },
+  video: {
+    width: '100%',
     height: '100%',
+  },
+  backButton: {
+    position: 'absolute',
+    top: Platform.OS === 'ios' ? 50 : 20,
+    left: 20,
+    zIndex: 3,
+  },
+  scrollContent: {
+    flex: 1,
+    marginTop: 240, // Height of video container
   },
   seasonInfo: {
     padding: 20,
-    paddingTop: Platform.OS === 'ios' ? 80 : 50,
+    paddingTop: 20,
   },
   seasonTitle: {
     fontSize: 28,
@@ -129,6 +204,10 @@ const styles = StyleSheet.create({
     marginBottom: 12,
     borderRadius: 12,
     overflow: 'hidden',
+  },
+  currentEpisodeCard: {
+    borderWidth: 2,
+    borderColor: '#FF6B6B',
   },
   episodeCardBlur: {
     flexDirection: 'row',
@@ -171,5 +250,15 @@ const styles = StyleSheet.create({
   episodeDuration: {
     fontSize: 14,
     opacity: 0.7,
+  },
+  loadingContainer: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.3)',
   },
 }); 
