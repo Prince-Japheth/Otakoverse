@@ -6,7 +6,6 @@ import { useTheme } from '../context/ThemeContext';
 import { Ionicons } from '@expo/vector-icons';
 import CustomTabBar from '../components/CustomTabBar';
 import { useNavigation } from '@react-navigation/native';
-import { createStackNavigator } from '@react-navigation/stack';
 import HomeScreen from '../screens/HomeScreen';
 import SearchScreen from '../screens/SearchScreen';
 import FavouritesScreen from '../screens/FavouritesScreen';
@@ -14,16 +13,17 @@ import SettingsScreen from '../screens/SettingsScreen';
 import AnimeDetails from '../screens/AnimeDetails';
 import SeasonEpisodes from '../screens/SeasonEpisodes';
 import NotificationScreen from '../screens/NotificationScreen';
+import DownloadsStack from './DownloadsStack';
 
 // Screens
 import SplashScreen from '../screens/SplashScreen';
 import OnboardingScreen from '../screens/OnboardingScreen';
 import TrendingScreen from '../screens/TrendingScreen';
 import AuthScreen from '../screens/AuthScreen';
-import SuggestionScreen from '../screens/SuggestionScreen';
 import LoadingScreen from '../screens/LoadingScreen';
 import RecentlyWatchedScreen from '../screens/RecentlyWatchedScreen';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import VideoPlayer from '../screens/VideoPlayer';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -50,7 +50,7 @@ function TabNavigator() {
       >
         {() => (
           <Stack.Navigator 
-          screenOptions={{ headerShown: false }}
+            screenOptions={{ headerShown: false }}
             initialRouteName="HomeScreen">
             <Stack.Screen name="HomeScreen" component={HomeScreen} />
             <Stack.Screen 
@@ -159,58 +159,11 @@ function TabNavigator() {
         component={SettingsScreen}
         options={{
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="settings" size={size} color={color} />
+            <Ionicons name="ellipsis-horizontal" size={size} color={color} />
           ),
         }}
       />
     </Tab.Navigator>
-  );
-}
-
-function StackNavigator() {
-  const { theme } = useTheme();
-
-  return (
-    <Stack.Navigator
-      screenOptions={{
-        headerShown: false,
-        cardStyle: { backgroundColor: theme.background },
-      }}
-    >
-      <Stack.Screen name="MainTabs" component={TabNavigator} />
-      <Stack.Screen 
-        name="SearchModal" 
-        component={SearchScreen}
-        options={{
-          presentation: 'modal',
-          animation: 'slide_from_bottom',
-          animationDuration: 300,
-          gestureEnabled: true,
-          gestureDirection: 'vertical',
-          cardOverlayEnabled: true,
-        }}
-      />
-      <Stack.Screen 
-        name="AnimeDetails" 
-        component={AnimeDetails}
-        options={{
-          presentation: 'modal',
-          animation: 'slide_from_bottom',
-          animationDuration: 300,
-          gestureEnabled: true,
-          gestureDirection: 'vertical',
-          cardOverlayEnabled: true,
-        }}
-      />
-      <Stack.Screen 
-        name="Notification" 
-        component={NotificationScreen}
-        options={{
-          presentation: 'modal',
-          animation: 'slide_from_bottom',
-        }}
-      />
-    </Stack.Navigator>
   );
 }
 
@@ -256,6 +209,8 @@ function MainNavigator() {
           component={OnboardingScreen}
           options={{
             cardStyle: { backgroundColor: theme.background },
+            presentation: 'card',
+            animation: 'fade',
           }}
         />
       )}
@@ -267,6 +222,8 @@ function MainNavigator() {
             cardStyle: { backgroundColor: theme.background },
             presentation: 'card',
             animation: 'fade',
+            gestureEnabled: false,
+            cardOverlayEnabled: false,
           }}
         />
       )}
@@ -275,17 +232,20 @@ function MainNavigator() {
         component={LoadingScreen}
         options={{
           cardStyle: { backgroundColor: theme.background },
+          presentation: 'card',
+          animation: 'fade',
         }}
       />
-      <Stack.Screen 
+      <Stack.Screen
         name="MainTabs" 
         component={TabNavigator}
         options={{
           animation: 'none',
+          presentation: 'card',
         }}
       />
-      <Stack.Screen 
-        name="SearchModal" 
+      <Stack.Screen
+        name="SearchModal"
         component={SearchScreen}
         options={{
           presentation: 'modal',
@@ -308,12 +268,29 @@ function MainNavigator() {
           cardOverlayEnabled: true,
         }}
       />
-      <Stack.Screen 
+      <Stack.Screen
         name="Notification" 
         component={NotificationScreen}
         options={{
           presentation: 'modal',
           animation: 'slide_from_bottom',
+        }}
+      />
+      <Stack.Screen
+        name="DownloadsStack"
+        component={DownloadsStack}
+        options={{
+          presentation: 'card',
+          animation: 'slide_from_right',
+        }}
+      />
+      <Stack.Screen
+        name="VideoPlayer"
+        component={VideoPlayer}
+        options={{
+          presentation: 'fullScreenModal',
+          animation: 'slide_from_bottom',
+          orientation: 'landscape',
         }}
       />
     </Stack.Navigator>

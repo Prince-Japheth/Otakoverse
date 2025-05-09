@@ -18,6 +18,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { BlurView } from 'expo-blur';
 import Carousel from 'react-native-snap-carousel';
 import Header from '../components/Header';
+import { featuredContent, recentWatched, myFavorites } from '../data/mockData';
 
 const { width } = Dimensions.get('window');
 
@@ -27,24 +28,6 @@ export default function HomeScreen({ navigation }) {
   const carouselRef = useRef(null);
   const [activeSlide, setActiveSlide] = useState(1);
   const [cornerAnimation] = useState(new Animated.Value(0));
-
-  const featuredContent = [
-    {
-      id: 1,
-      title: 'Dandadan',
-      image: 'https://static1.moviewebimages.com/wordpress/wp-content/uploads/sharedimages/2024/06/dandadan-2024.jpg?q=49&fit=crop&w=480&dpr=2'
-    },
-    {
-      id: 2,
-      title: 'Vinland Saga',
-      image: 'https://static1.moviewebimages.com/wordpress/wp-content/uploads/sharedimages/2024/04/vinland-saga-poster-4.jpg?q=49&fit=crop&w=480&dpr=2'
-    },
-    {
-      id: 3,
-      title: 'Death Note ',
-      image: 'https://static1.moviewebimages.com/wordpress/wp-content/uploads/sharedimages/2024/06/death-note-2006.jpg?q=49&fit=crop&w=480&dpr=2'
-    },
-  ];
 
   const renderFeaturedItem = ({ item, index }) => {
     index = index - 3;
@@ -62,10 +45,10 @@ export default function HomeScreen({ navigation }) {
             anime: {
               title: item.title,
               imageUrl: item.image,
-              rating: "16+",
-              episodes: "12",
-              status: "New • Season 1",
-              description: "A groundbreaking anime series that pushes the boundaries of storytelling and animation.",
+              rating: item.rating,
+              episodes: item.episodes,
+              status: item.status,
+              description: item.description,
             }
           })}
         >
@@ -81,10 +64,10 @@ export default function HomeScreen({ navigation }) {
               anime: {
                 title: item.title,
                 imageUrl: item.image,
-                rating: "16+",
-                episodes: "12",
-                status: "New • Season 1",
-                description: "A groundbreaking anime series that pushes the boundaries of storytelling and animation.",
+                rating: item.rating,
+                episodes: item.episodes,
+                status: item.status,
+                description: item.description,
               }
             })}
           >
@@ -216,29 +199,7 @@ export default function HomeScreen({ navigation }) {
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={styles.cardsContainer}
       >
-        {[
-          {
-            title: 'Neon Genesis Evangelion',
-            image: 'https://static1.moviewebimages.com/wordpress/wp-content/uploads/sharedimages/2024/07/neon-genesis-evangelion.jpg?q=49&fit=crop&w=480&dpr=2',
-            rating: "14+",
-            episodes: "26",
-            status: "Complete • Season 1"
-          },
-          {
-            title: 'Baccano!',
-            image: 'https://static1.moviewebimages.com/wordpress/wp-content/uploads/sharedimages/2024/07/baccano-1.jpg?q=49&fit=crop&w=480&dpr=2',
-            rating: "16+",
-            episodes: "13",
-            status: "Complete • Season 1"
-          },
-          {
-            title: 'Gintama',
-            image: 'https://static1.moviewebimages.com/wordpress/wp-content/uploads/sharedimages/2024/06/gintama-2005.jpg?q=70&fit=crop&w=480&dpr=1',
-            rating: "14+",
-            episodes: "367",
-            status: "Complete • Season 1-4"
-          },
-        ].map((item, index) => (
+        {recentWatched.map((item, index) => (
           <TouchableOpacity
             key={index}
             style={styles.mediaCard}
@@ -249,7 +210,7 @@ export default function HomeScreen({ navigation }) {
                 rating: item.rating,
                 episodes: item.episodes,
                 status: item.status,
-                description: "A classic anime series that has captivated audiences worldwide.",
+                description: item.description,
               }
             })}
           >
@@ -278,29 +239,7 @@ export default function HomeScreen({ navigation }) {
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={styles.cardsContainer}
       >
-        {[
-          {
-            title: 'Code Geass: Lelouch of the Rebellion',
-            image: 'https://static1.moviewebimages.com/wordpress/wp-content/uploads/sharedimages/2024/04/code-geass-lelouch-of-the-rebellion-2006.jpg?q=49&fit=crop&w=480&dpr=2',
-            rating: "16+",
-            episodes: "50",
-            status: "Complete • Season 1-2"
-          },
-          {
-            title: 'Haikyuu!!',
-            image: 'https://static1.moviewebimages.com/wordpress/wp-content/uploads/sharedimages/2024/08/haikyuu.jpg?q=49&fit=crop&w=480&dpr=2',
-            rating: "12+",
-            episodes: "85",
-            status: "Complete • Season 1-4"
-          },
-          {
-            title: 'One Punch Man',
-            image: 'https://static1.moviewebimages.com/wordpress/wp-content/uploads/2024/09/mv5bzjjlnze5yzetyzqwys00ntbjltk5yzatyzuwowqym2e3ogi2xkeyxkfqcgdeqxvyntgynta4mjm-_v1_.jpg?q=49&fit=crop&w=480&dpr=2',
-            rating: "14+",
-            episodes: "24",
-            status: "Ongoing • Season 2"
-          },
-        ].map((item, index) => (
+        {myFavorites.map((item, index) => (
           <TouchableOpacity
             key={index}
             style={styles.mediaCard}
@@ -311,7 +250,7 @@ export default function HomeScreen({ navigation }) {
                 rating: item.rating,
                 episodes: item.episodes,
                 status: item.status,
-                description: "A beloved anime series that continues to inspire fans around the world.",
+                description: item.description,
               }
             })}
           >

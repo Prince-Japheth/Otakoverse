@@ -3,9 +3,11 @@ import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Alert } from 'rea
 import { useTheme } from '../context/ThemeContext';
 import { Ionicons } from '@expo/vector-icons';
 import { Switch } from 'react-native-switch';
+import { useNavigation } from '@react-navigation/native';
 
 export default function SettingsScreen() {
   const { theme, toggleTheme, isDarkMode } = useTheme();
+  const navigation = useNavigation();
   const [pushNotifications, setPushNotifications] = useState(true);
   const [emailNotifications, setEmailNotifications] = useState(false);
   
@@ -62,7 +64,7 @@ export default function SettingsScreen() {
               backgroundActive={theme.primary}
               backgroundInactive={isDarkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)'}
               circleActiveColor='#fff'
-              circleInActiveColor='#fff'
+              circleInactiveColor='#fff'
               changeValueImmediately={true}
               switchWidthMultiplier={2.6}
               switchBorderRadius={100}
@@ -71,6 +73,9 @@ export default function SettingsScreen() {
               renderInActiveText={false}
               innerCircleStyle={{ borderWidth: 0, elevation: 0 }}
             />
+          )}
+          {type === 'button' && (
+            <Ionicons name="chevron-forward" size={24} color={theme.textSecondary} />
           )}
         </View>
       </TouchableOpacity>
@@ -118,6 +123,24 @@ export default function SettingsScreen() {
           type: 'button',
           icon: 'timer-outline',
           customContent: <SubscriptionCountdown />
+        })}
+      </View>
+
+      <View style={styles.section}>
+        <Text style={[styles.sectionTitle, { color: theme.text }]}>Downloads</Text>
+        {renderSettingItem({
+          title: 'Downloads',
+          description: 'Manage your downloaded content',
+          type: 'button',
+          icon: 'download-outline',
+          onPress: () => navigation.navigate('DownloadsStack', { screen: 'DownloadsScreen' })
+        })}
+        {renderSettingItem({
+          title: 'Download Settings',
+          description: 'Configure download preferences',
+          type: 'button',
+          icon: 'settings-outline',
+          onPress: () => navigation.navigate('DownloadsStack', { screen: 'DownloadsSettings' })
         })}
       </View>
 

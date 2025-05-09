@@ -57,6 +57,8 @@ const CustomTabBar = ({ state, descriptors, navigation }) => {
                   if (!isFocused && !event.defaultPrevented) {
                     if (route.name === 'FavouritesStack') {
                       navigation.navigate('FavouritesStack', { screen: 'FavouritesScreen' });
+                    } else if (route.name === 'DownloadsStack') {
+                      navigation.navigate('DownloadsStack', { screen: 'DownloadsScreen' });
                     } else if (route.name === 'HomeStack') {
                       navigation.navigate('HomeStack', { screen: 'HomeScreen' });
                     } else if (route.name === 'Trending') {
@@ -78,8 +80,10 @@ const CustomTabBar = ({ state, descriptors, navigation }) => {
                   iconName = 'search-outline';
                 } else if (route.name === 'FavouritesStack') {
                   iconName = isFocused ? 'heart' : 'heart-outline';
+                } else if (route.name === 'DownloadsStack') {
+                  iconName = isFocused ? 'download' : 'download-outline';
                 } else if (route.name === 'Settings') {
-                  iconName = isFocused ? 'person' : 'person-outline';
+                  iconName = isFocused ? 'ellipsis-horizontal' : 'ellipsis-horizontal-outline';
                 }
 
                 return (

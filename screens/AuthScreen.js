@@ -9,6 +9,8 @@ import {
   Platform,
   Animated,
   ActivityIndicator,
+  TextInput,
+  TouchableOpacity,
 } from 'react-native';
 import { Video, ResizeMode } from 'expo-av';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -25,6 +27,10 @@ export default function AuthScreen({ navigation }) {
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const videoRef = useRef(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [isLogin, setIsLogin] = useState(true);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
 
   useEffect(() => {
     // Start fade animation immediately
@@ -35,11 +41,10 @@ export default function AuthScreen({ navigation }) {
     }).start();
   }, []);
 
-  const handleGoogleSignIn = async () => {
+  const handleSubmit = async () => {
     try {
       setIsLoading(true);
-      // TODO: Implement actual Google Sign In logic here
-      // For now, we'll just simulate a successful sign in
+      // TODO: Implement actual authentication logic here
       await new Promise(resolve => setTimeout(resolve, 1500)); // Simulate API call
       
       // Save authentication state
@@ -48,9 +53,8 @@ export default function AuthScreen({ navigation }) {
       // Navigate to Loading screen
       navigation.navigate('Loading');
     } catch (error) {
-      console.error('Sign in error:', error);
+      console.error('Authentication error:', error);
       setIsLoading(false);
-      // Handle error appropriately
     }
   };
 
@@ -105,14 +109,53 @@ export default function AuthScreen({ navigation }) {
             <View style={styles.welcomeContainer}>
               <Text style={styles.welcomeTitle}>Welcome to Otakushi</Text>
               <Text style={styles.welcomeText}>
-                Stream your favorite anime anytime, anywhere. Save shows to your favorites and discover new series to love.
+                {isLogin ? 'Sign in to continue' : 'Create your account'}
               </Text>
             </View>
 
-            {/* Sign In Button */}
-            <View style={styles.buttonContainer}>
+            {/* Form Container */}
+            <View style={styles.formContainer}>
+              <View style={styles.inputContainer}>
+                <Ionicons name="mail-outline" size={20} color="rgba(255,255,255,0.5)" style={styles.inputIcon} />
+                <TextInput
+                  style={styles.input}
+                  placeholder="Email"
+                  placeholderTextColor="rgba(255,255,255,0.5)"
+                  value={email}
+                  onChangeText={setEmail}
+                  keyboardType="email-address"
+                  autoCapitalize="none"
+                />
+              </View>
+
+              <View style={styles.inputContainer}>
+                <Ionicons name="lock-closed-outline" size={20} color="rgba(255,255,255,0.5)" style={styles.inputIcon} />
+                <TextInput
+                  style={styles.input}
+                  placeholder="Password"
+                  placeholderTextColor="rgba(255,255,255,0.5)"
+                  value={password}
+                  onChangeText={setPassword}
+                  secureTextEntry
+                />
+              </View>
+
+              {!isLogin && (
+                <View style={styles.inputContainer}>
+                  <Ionicons name="lock-closed-outline" size={20} color="rgba(255,255,255,0.5)" style={styles.inputIcon} />
+                  <TextInput
+                    style={styles.input}
+                    placeholder="Confirm Password"
+                    placeholderTextColor="rgba(255,255,255,0.5)"
+                    value={confirmPassword}
+                    onChangeText={setConfirmPassword}
+                    secureTextEntry
+                  />
+                </View>
+              )}
+
               <AnimatedButton
-                onPress={handleGoogleSignIn}
+                onPress={handleSubmit}
                 style={[styles.button, isLoading && styles.buttonLoading]}
                 gradientColors={theme.gradient}
                 isBlurred={false}
@@ -121,16 +164,20 @@ export default function AuthScreen({ navigation }) {
                 {isLoading ? (
                   <ActivityIndicator color="#fff" size="small" />
                 ) : (
-                  <>
-                    <Ionicons name="logo-google" size={24} color="#fff" style={styles.buttonIcon} />
-                    <Text style={styles.buttonText}>Continue with Google</Text>
-                  </>
+                  <Text style={styles.buttonText}>
+                    {isLogin ? 'Sign In' : 'Sign Up'}
+                  </Text>
                 )}
               </AnimatedButton>
               
-              <Text style={styles.termsText}>
-                By continuing, you agree to our Terms of Service and Privacy Policy
+              <TouchableOpacity 
+                style={styles.switchButton}
+                onPress={() => setIsLogin(!isLogin)}
+              >
+                <Text style={styles.switchButtonText}>
+                  {isLogin ? "Don't have an account? Sign Up" : "Already have an account? Sign In"}
               </Text>
+              </TouchableOpacity>
             </View>
           </BlurView>
         </Animated.View>
@@ -178,16 +225,31 @@ const styles = StyleSheet.create({
     color: 'rgba(255,255,255,0.8)',
     lineHeight: 24,
   },
-  buttonContainer: {
+  formContainer: {
     padding: 24,
     paddingTop: 0,
+  },
+  inputContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(255,255,255,0.1)',
+    borderRadius: 12,
+    marginBottom: 16,
+    paddingHorizontal: 16,
+    height: 56,
+  },
+  inputIcon: {
+    marginRight: 12,
+  },
+  input: {
+    flex: 1,
+    color: '#fff',
+    fontSize: 16,
   },
   button: {
     height: 56,
     width: '100%',
-  },
-  buttonIcon: {
-    marginRight: 12,
+    marginTop: 8,
   },
   buttonText: {
     color: '#fff',
@@ -195,13 +257,15 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     letterSpacing: 0.5,
   },
-  termsText: {
-    color: 'rgba(255,255,255,0.5)',
-    fontSize: 12,
-    textAlign: 'center',
-    marginTop: 16,
-  },
   buttonLoading: {
     opacity: 0.8,
+  },
+  switchButton: {
+    marginTop: 16,
+    alignItems: 'center',
+  },
+  switchButtonText: {
+    color: 'rgba(255,255,255,0.8)',
+    fontSize: 14,
   },
 }); 
